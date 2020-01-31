@@ -1,1 +1,7 @@
-select {width:50em; height: 10em;}
+select {width:40em; height: 10em;}
+
+.select-container
+{
+ display: flex;
+ flex-wrap: wrap;
+}

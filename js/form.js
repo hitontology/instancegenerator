@@ -36,6 +36,9 @@ export default class Form
   async init()
   {
     const form = document.getElementById("form");
+    const container = document.createElement("div");
+    container.classList.add("select-container");
+    form.appendChild(container);
     const pBinds = await sparql.select(propertyQuery(this.clazz));
     const iBinds = await sparql.select(instanceQuery(this.clazz));
     iBinds.forEach(b=>{this.labelForResource.set(b.i.value,b.l.value);});
@@ -56,7 +59,7 @@ export default class Form
       this.properties.push(p);
 
       const par =  document.createElement("p");
-      form.appendChild(par);
+      container.appendChild(par);
       const label = document.createElement("label");
       label.for= p;
       label.innerText = b.l.value;
