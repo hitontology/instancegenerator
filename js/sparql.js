@@ -2,8 +2,8 @@
 Functions for querying the HITO SPARQL endpoint.
 @module */
 
-const HITO_GRAPH = "http://hitontology.eu/ontology";
-const HITO_ENDPOINT = "https://hitontology.eu/sparql";
+export const HITO_GRAPH = "http://hitontology.eu/ontology";
+export const HITO_ENDPOINT = "https://hitontology.eu/sparql";
 
 export const DBPEDIA_GRAPH = "http://dbpedia.org";
 export const DBPEDIA_ENDPOINT = "http://dbpedia.org/sparql";
@@ -42,4 +42,10 @@ export async function select(query,graph=HITO_GRAPH, endpoint=HITO_ENDPOINT)
     console.error(`Error executing SPARQL query:\n${query}\nURL: ${url}\n\n`);
     return [];
   }
+}
+
+/** reduces the {type,value} object to just the value for each binding attribute */
+export function flat(bindings)
+{
+  return bindings.map(b=>Object.keys(b).reduce((result,key)=>{result[key]=b[key].value;return result;},{}));
 }

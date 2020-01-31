@@ -3,23 +3,56 @@ import * as sparql from "./sparql.js";
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
 
-const propertyQuery = clazz =>
-  `SELECT ?p STR(SAMPLE(?l)) as ?l ?range ?type
+/** returns an array of instances of the given class */
+async function queryInstances(clazz)
 {
-  ?p rdfs:domain ${clazz};
-  rdfs:range ?range;
-  a ?type.
-  OPTIONAL {?p rdfs:label ?l.}
-}`;
+  let [graph,endpoint] = [sparql.HITO_GRAPH,sparql.HITO_ENDPOINT];
+  if(clazz.includes("dbpedia.org/"))
+  {
+    [graph,endpoint] = [sparql.DBPEDIA_GRAPH,sparql.DBPEDIA_ENDPOINT];
+  }
+  const query  = `SELECT ?uri STR(SAMPLE(?label)) as ?label
+  {
+    ?uri a <${clazz}>.
+    OPTIONAL {?uri rdfs:label ?label.}
+  }`;
+  return sparql.flat(await sparql.select(query,graph,endpoint));
+}
 
-const instanceQuery = clazz =>
-  `SELECT ?p ?i STR(SAMPLE(?l)) as ?l
+class Property
 {
-  ?p rdfs:domain ${clazz};
-  rdfs:range ?range.
-  ?i a ?range.
-  OPTIONAL {?i rdfs:label ?l.}
-}`;
+  /** */
+  constructor(uri,label,range,instances)
+  {
+    this.uri = uri;
+    this.label = label;
+    if(!label) {label = "No label for "+uri;}
+    this.range = range;
+    this.instances=instances;
+  }
+
+  /** returns an array of all properties that have the given domain*/
+  static async domainProperties(domain)
+  {
+    const query=
+    `SELECT ?uri STR(SAMPLE(?label)) as ?label ?range
+    {
+      ?uri rdfs:domain <${domain}>;
+      rdfs:range ?range.
+      OPTIONAL {?uri rdfs:label ?label.}
+    }`;
+    const bindings = sparql.flat(await sparql.select(query));
+    const properties = [];
+    // parallelize
+    for(const b of bindings) {b.promise = queryInstances(b.range);}
+    for(const b of bindings)
+    {
+      properties.push(new Property(b.uri,b.label,b.range,await b.promise));
+      b.promise=undefined;
+    }
+    return properties;
+  }
+}
 
 export default class Form
 {
@@ -28,8 +61,8 @@ export default class Form
   {
     this.clazz = clazz;
     this.labelForResource = new Map();
-    this.properties = [];
     this.init().then({});
+    this.submit=this.submit.bind(this);
   }
 
   /** load the data from the SPARQL endpoint and populate */
@@ -37,72 +70,36 @@ export default class Form
   {
     const form = document.getElementById("form");
     const container = document.createElement("div");
-    container.classList.add("select-container");
+    container.classList.add("select-container"); // flexbox
     form.appendChild(container);
-    const pBinds = await sparql.select(propertyQuery(this.clazz));
-    const iBinds = await sparql.select(instanceQuery(this.clazz));
-    iBinds.forEach(b=>{this.labelForResource.set(b.i.value,b.l.value);});
-    const allProperties = [...new Set(iBinds.map(b=>b.p.value))];
-    let instancesForProperty = new Map(allProperties.map(p=>[p,new Set(iBinds.filter(b=>b.p.value===p).map(b=>b.i.value))]));
 
-    const dbpediaPropertyInstanceEntries = await Promise.all(pBinds
-      .filter(b=>b.range.value.includes("dbpedia.org"))
-      .map(async b => [b.p.value, await this.dbpediaInstances(b.range.value)]));
+    this.properties = await Property.domainProperties(this.clazz);
 
-    instancesForProperty = new Map([...instancesForProperty,...dbpediaPropertyInstanceEntries]);
-
-    for(const b of pBinds)
+    for(const p of this.properties)
     {
-      const p = b.p.value;
-      this.labelForResource.set(p,b.l.value);
-      if(!instancesForProperty.has(p)) {continue;}
-      this.properties.push(p);
-
       const par =  document.createElement("p");
       container.appendChild(par);
       const label = document.createElement("label");
-      label.for= p;
-      label.innerText = b.l.value;
+      label.for= p.uri;
+      label.innerText = p.label;
       par.appendChild(label);
       const select = document.createElement("select");
       par.appendChild(select);
       select.style.display="block";
-      select.name = p;
-      select.id = p;
+      select.name = p.uri;
+      select.id = p.uri;
       select.setAttribute("multiple","");
-      for(const i of instancesForProperty.get(p))
+
+      for(const i of p.instances)
       {
         const option = document.createElement("option");
         select.appendChild(option);
-        option.value = i;
-        option.innerText = this.getLabel(i);
+        option.value = i.uri;
+        option.innerText = i.label;
+        //option.innerText = this.getLabel(i);
       }
     }
     this.selected = select => [...select.options].filter(o => o.selected).map(o => o.value);
-  }
-
-  /** Get URI and label for the first 100 instances of the class.*/
-  async dbpediaInstances()
-  {
-    const query =
-      `SELECT ?i STR(SAMPLE(?l)) as ?l
-      {
-        ?i a <${this.clazz}>.
-        OPTIONAL {?i rdfs:label ?l. FILTER(LANGMATCHES(LANG(?l),"en"))}
-      } limit 100`;
-    const binds = await sparql.select(query,sparql.DBPEDIA_GRAPH,sparql.DBPEDIA_ENDPOINT);
-    binds.filter(b=>b.l).forEach(b=>{this.labelForResource.set(b.i.value,b.l.value);});
-    return new Set(binds.map(b=>b.i.value));
-  }
-
-  /** Fetch or generate the label for a resource. */
-  getLabel(uri)
-  {
-    if(!this.labelForResource.has(uri))
-    {
-      this.labelForResource.set(uri,uri.replace(/.*\//,""));
-    }
-    return this.labelForResource.get(uri);
   }
 
   /** Generate RDF from form*/
@@ -112,10 +109,9 @@ export default class Form
     let rdf = "";
     for(const p of this.properties)
     {
-      //console.log(p,selected(document.getElementById(p)));
-      for(const s of this.selected(document.getElementById(p)))
+      for(const s of this.selected(document.getElementById(p.uri)))
       {
-        rdf+=product + ` <${p}> <${s}>.\n`;
+        rdf+=product + ` <${p.uri}> <${s}>.\n`;
       }
     }
     alert(rdf);
