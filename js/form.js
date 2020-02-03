@@ -1,5 +1,6 @@
 /** @module */
 import * as sparql from "./sparql.js";
+import * as rdf from "./rdf.js";
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
 
@@ -61,17 +62,28 @@ export default class Form
   {
     this.clazz = clazz;
     this.labelForResource = new Map();
+
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    const h1 = document.createElement("h1");
+    h1.innerText = "Add "+rdf.short(clazz);
+    this.form = document.createElement("form");
+    //this.form.id=id;
+    const submitButton = document.createElement("input");
+    submitButton.type="submit";
+    submitButton.value="Create";
+    div.append(h1,submitButton,this.form);
     this.init().then({});
     this.submit=this.submit.bind(this);
+    submitButton.addEventListener("click",this.submit);
   }
 
   /** load the data from the SPARQL endpoint and populate */
   async init()
   {
-    const form = document.getElementById("form");
     const container = document.createElement("div");
     container.classList.add("select-container"); // flexbox
-    form.appendChild(container);
+    this.form.appendChild(container);
 
     this.properties = await Property.domainProperties(this.clazz);
 
@@ -106,12 +118,12 @@ export default class Form
   submit(e)
   {
     e.preventDefault();
-    let rdf = "";
+    let text = "";
     for(const p of this.properties)
     {
       for(const s of this.selected(document.getElementById(p.uri)))
       {
-        rdf+=product + ` <${p.uri}> <${s}>.\n`;
+        text+=product + ` <${p.uri}> <${s}>.\n`;
       }
     }
     alert(rdf);
