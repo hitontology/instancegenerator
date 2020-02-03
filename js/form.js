@@ -15,7 +15,7 @@ async function queryInstances(clazz)
   const query  = `SELECT ?uri STR(SAMPLE(?label)) as ?label
   {
     ?uri a <${clazz}>.
-    OPTIONAL {?uri rdfs:label ?label.}
+    OPTIONAL {?uri rdfs:label ?label. filter(langmatches(lang(?label),"en"))}
   }`;
   return sparql.flat(await sparql.select(query,graph,endpoint));
 }
@@ -63,8 +63,8 @@ export default class Form
     this.clazz = clazz;
     this.labelForResource = new Map();
 
-    const div = document.createElement("div");
-    document.body.appendChild(div);
+    this.container = document.createElement("div");
+    document.body.appendChild(this.container);
     const h1 = document.createElement("h1");
     h1.innerText = "Add "+rdf.short(clazz);
     this.form = document.createElement("form");
@@ -72,7 +72,7 @@ export default class Form
     const submitButton = document.createElement("input");
     submitButton.type="submit";
     submitButton.value="Create";
-    div.append(h1,submitButton,this.form);
+    this.container.append(h1,submitButton,this.form);
     this.init().then({});
     this.submit=this.submit.bind(this);
     submitButton.addEventListener("click",this.submit);
@@ -81,16 +81,16 @@ export default class Form
   /** load the data from the SPARQL endpoint and populate */
   async init()
   {
-    const container = document.createElement("div");
-    container.classList.add("select-container"); // flexbox
-    this.form.appendChild(container);
+    const selectContainer = document.createElement("div");
+    selectContainer.classList.add("select-container"); // flexbox
+    this.form.appendChild(selectContainer);
 
     this.properties = await Property.domainProperties(this.clazz);
 
     for(const p of this.properties)
     {
       const par =  document.createElement("p");
-      container.appendChild(par);
+      selectContainer.appendChild(par);
       const label = document.createElement("label");
       label.for= p.uri;
       label.innerText = p.label;
@@ -98,6 +98,7 @@ export default class Form
       const select = document.createElement("select");
       par.appendChild(select);
       select.style.display="block";
+      select.classList.add("large");
       select.name = p.uri;
       select.id = p.uri;
       select.setAttribute("multiple","");
@@ -112,6 +113,12 @@ export default class Form
       }
     }
     this.selected = select => [...select.options].filter(o => o.selected).map(o => o.value);
+  }
+
+  /** Remove the form from the DOM. */
+  unregister()
+  {
+    document.body.removeChild(this.container);
   }
 
   /** Generate RDF from form*/

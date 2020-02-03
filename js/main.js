@@ -3,8 +3,21 @@ import Form from "./form.js";
 import * as rdf from "./rdf.js";
 
 const classes = ["http://hitontology.eu/ontology/SoftwareProduct","http://hitontology.eu/ontology/Study"];
-
 const select = document.createElement("select");
+
+let activeForm;
+
+/** Sets the active form class. */
+function setClass(clazz)
+{
+  if(activeForm) {activeForm.unregister();}
+  {activeForm = new Form(clazz);}
+}
+
+select.addEventListener("change", (event)=>
+{
+  setClass(event.target.value);
+});
 document.body.appendChild(select);
 for(const clazz of classes)
 {
@@ -13,8 +26,7 @@ for(const clazz of classes)
   option.value = clazz;
   option.innerText = rdf.short(clazz);
 }
-select.addEventListener("change", new Form(clazz);
-
+setClass(select.value);
 
 //document.addEventListener("DOMContentLoaded",form.init);
 //document.addEventListener("submit",form.submit);
