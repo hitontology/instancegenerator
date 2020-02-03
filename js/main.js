@@ -2,7 +2,8 @@
 import Form from "./form.js";
 import * as rdf from "./rdf.js";
 
-const classes = ["http://hitontology.eu/ontology/SoftwareProduct","http://hitontology.eu/ontology/Study"];
+const classes = ["http://hitontology.eu/ontology/SoftwareProduct","http://hitontology.eu/ontology/Study",
+  "http://hitontology.eu/ontology/FeatureClassified"];
 const select = document.createElement("select");
 
 let activeForm;

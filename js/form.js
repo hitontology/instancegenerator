@@ -3,6 +3,8 @@ import * as sparql from "./sparql.js";
 import * as rdf from "./rdf.js";
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
+const DPROP = rdf.long("owl:DatatypeProperty");
+const OPROP = rdf.long("owl:ObjectProperty");
 
 /** returns an array of instances of the given class */
 async function queryInstances(clazz)
@@ -23,11 +25,12 @@ async function queryInstances(clazz)
 class Property
 {
   /** */
-  constructor(uri,label,range,instances)
+  constructor(uri,label,type,range,instances)
   {
     this.uri = uri;
     this.label = label;
-    if(!label) {label = "No label for "+uri;}
+    this.type = type;
+    if(!label) {console.log(range);this.label = rdf.short(uri);}
     this.range = range;
     this.instances=instances;
   }
@@ -36,19 +39,25 @@ class Property
   static async domainProperties(domain)
   {
     const query=
-    `SELECT ?uri STR(SAMPLE(?label)) as ?label ?range
+    `SELECT ?uri STR(SAMPLE(?label)) as ?label ?type ?range
     {
       ?uri rdfs:domain <${domain}>;
-      rdfs:range ?range.
+      rdfs:range ?range;
+      rdf:type ?type.
+      FILTER(?type=owl:DatatypeProperty OR ?type=owl:ObjectProperty)
       OPTIONAL {?uri rdfs:label ?label.}
     }`;
     const bindings = sparql.flat(await sparql.select(query));
     const properties = [];
     // parallelize
-    for(const b of bindings) {b.promise = queryInstances(b.range);}
     for(const b of bindings)
     {
-      properties.push(new Property(b.uri,b.label,b.range,await b.promise));
+      if(b.type!==OPROP) {continue;}
+      {b.promise = queryInstances(b.range);}
+    }
+    for(const b of bindings)
+    {
+      properties.push(new Property(b.uri,b.label,b.type,b.range,await b.promise));
       b.promise=undefined;
     }
     return properties;
@@ -81,38 +90,49 @@ export default class Form
   /** load the data from the SPARQL endpoint and populate */
   async init()
   {
-    const selectContainer = document.createElement("div");
-    selectContainer.classList.add("select-container"); // flexbox
-    this.form.appendChild(selectContainer);
+    const classContainer = document.createElement("div");
+    classContainer.classList.add("select-container"); // flexbox
+    this.form.appendChild(classContainer);
 
     this.properties = await Property.domainProperties(this.clazz);
 
     for(const p of this.properties)
     {
       const par =  document.createElement("p");
-      selectContainer.appendChild(par);
+      classContainer.appendChild(par);
       const label = document.createElement("label");
       label.for= p.uri;
       label.innerText = p.label;
       par.appendChild(label);
-      const select = document.createElement("select");
-      par.appendChild(select);
-      select.style.display="block";
-      select.classList.add("large");
-      select.name = p.uri;
-      select.id = p.uri;
-      select.setAttribute("multiple","");
-
-      for(const i of p.instances)
+      if(p.type===DPROP)
       {
-        const option = document.createElement("option");
-        select.appendChild(option);
-        option.value = i.uri;
-        option.innerText = i.label;
+        const text = document.createElement("input");
+        par.appendChild(text);
+        text.setAttribute("type",text);
+        text.classList.add("textline");
+        p.text = () => text.value;
+      }
+      else
+      {
+        const select = document.createElement("select");
+        par.appendChild(select);
+        select.style.display="block";
+        select.classList.add("large");
+        select.name = p.uri;
+        select.id = p.uri;
+        select.setAttribute("multiple","");
+        if(!p.instances) {continue;}
+        for(const i of p.instances)
+        {
+          const option = document.createElement("option");
+          select.appendChild(option);
+          option.value = i.uri;
+          option.innerText = i.label;
         //option.innerText = this.getLabel(i);
+        }
+        p.selected = () => [...select.options].filter(o => o.selected).map(o => o.value);
       }
     }
-    this.selected = select => [...select.options].filter(o => o.selected).map(o => o.value);
   }
 
   /** Remove the form from the DOM. */
@@ -128,11 +148,17 @@ export default class Form
     let text = "";
     for(const p of this.properties)
     {
-      for(const s of this.selected(document.getElementById(p.uri)))
+      if(!p.selected)
+      {
+        if(!p.text()) {continue;}
+        text+=product + ` <${p.uri}> "${p.text()}".\n`;
+        continue;
+      }
+      for(const s of p.selected())
       {
         text+=product + ` <${p.uri}> <${s}>.\n`;
       }
     }
-    alert(rdf);
+    alert(text);
   }
 }
