@@ -6,7 +6,7 @@ export const HITO_GRAPH = "http://hitontology.eu/ontology";
 export const HITO_ENDPOINT = "https://hitontology.eu/sparql";
 
 export const DBPEDIA_GRAPH = "http://dbpedia.org";
-export const DBPEDIA_ENDPOINT = "http://dbpedia.org/sparql";
+export const DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql";
 
 /** Query public SNIK SPARQL endpoint with a SELECT query.
 ASK queries should also work but better use {@link ask} instead as it is more convenient.
