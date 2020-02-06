@@ -4,8 +4,9 @@
   "description": "This graphical user interface to generate new instances for HITO, starting with software products.",
   "homepage": "https://github.com/hitontology/instancegenerator#readme",
   "main": "main.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test"
   },
   "author": {
     "name": "Konrad Höffner",
@@ -15,7 +16,11 @@
     "url": "https://github.com/hitontology/instancegenerator/issues"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-import": "^2.20.0"
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-mocha": "^6.2.2",
+    "fuse.js": "^3.4.6",
+    "mocha": "^7.0.0-esm1"
   }
 }
