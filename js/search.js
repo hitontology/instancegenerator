@@ -1,5 +1,5 @@
 /**
-Fuzzy search with fuse.js.
+Fuzzy search index with fuse.js.
 @module */
 import * as sparql from "./sparql.js";
 
@@ -17,18 +17,19 @@ const options =
   keys:
   [
     {name:"l", weight: 0.7}, // label
-    {name:"c", weight: 0.3}, // comment
+    {name:"al", weight: 0.6}, // alternative label
   ],
 };
 
 /** Fulltext index of all instances of a class from a SPARQL endpoint. */
-export class Index
+export default class Search
 {
   /** Needs to be initialized with init().*/
-  constructor(clazz,graphs)
+  constructor(clazz,graphs,endpoint)
   {
     this.clazz = clazz;
     this.graphs = graphs;
+    this.endpoint = endpoint;
   }
 
   /** Fills the index with the instances from the SPARQL endpoint. Gets called automatically on first search.*/
@@ -36,16 +37,16 @@ export class Index
   {
     console.log("Create Fuse Search Index");
     const froms = this.graphs.map(graph=>`from <${graph}>`).reduce((a,b)=>a+"\n"+b);
-    const sparqlQuery = `select
-    ?c as ?uri
+    const sparqlQuery = `select ?c as ?uri
     group_concat(distinct(str(?l));separator="|") as ?l
-    group_concat(distinct(str(?cmt));separator="|") as ?cmt
+    group_concat(distinct(str(?al));separator="|") as ?al
     ${froms}
     {
       ?c a <${this.clazz}>.
       OPTIONAL {?c rdfs:label ?l.}
+      OPTIONAL {?c skos:altLabel ?al.}
     }`;
-    const bindings = sparql.flat(await sparql.select(sparqlQuery));
+    const bindings = sparql.flat(await sparql.select(sparqlQuery,this.endpoint));
     const items = [];
     for(const b of bindings)
     {
@@ -61,13 +62,12 @@ export class Index
     return items; // for testing
   }
 
-  /** Searches the Fuse index for classes with a similar label.
+  /** Searches the Fuse index for classes with a similar label. Needs to be initialized before use.
     @param {string} userQuery
     @return {Promise<string[]>} the class URIs found.
     */
-  async search(userQuery)
+  search(userQuery)
   {
-    if(!this.index) {await this.init();}
     const result = this.index.search(userQuery);
     return result;
   }

@@ -18,7 +18,7 @@ async function queryInstances(clazz)
   {
     ?uri a <${clazz}>.
     OPTIONAL {?uri rdfs:label ?label. filter(langmatches(lang(?label),"en"))}
-  }`;
+  } ORDER BY ASC(?uri)`;
   return sparql.flat(await sparql.select(query,graph,endpoint));
 }
 
