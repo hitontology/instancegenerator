@@ -28,15 +28,15 @@ const benchmark =
     class: "http://dbpedia.org/ontology/ProgrammingLanguage",
     graph: "http://dbpedia.org",
     endpoint: "https://dbpedia.org/sparql",
-    instance: "http://live.dbpedia.org/resource/SPARQL",
-    queries: ["SPARQL", "sparql", "sparcl", "SPARQL Protocol And RDF Query Language", "RDF Query Language"],
+    instance: "http://dbpedia.org/resource/Python_(programming_language)",
+    queries: ["Python", "python", "py", "Pithon"],
   },
   {
     class: "http://dbpedia.org/class/yago/License106549661",
     graph: "http://dbpedia.org",
     endpoint: "https://dbpedia.org/sparql",
     instance: "http://dbpedia.org/resource/Apple_Public_Source_License",
-    queries: ["Apple_Public_Source_License", "Apple Public Source License", "Public Source License", "Apple License", "Abble License"],
+    queries: ["Apple_Public_Source_License", "Apple Public Source License", "Public Source License", "Apple License"],
   },
   {
     class: "http://dbpedia.org/class/yago/OperatingSystem106568134",
