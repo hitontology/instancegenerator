@@ -1,4 +1,40 @@
 # Instance Generator
 
-This graphical user interface to generate new instances for HITO, starting with software products.
-Published at <https://hitontology.github.io/instancegenerator/>.
+The graphical user interface to generate new instances for HITO, starting with software products.
+
+## Development
+You only need Git, NPM and a browser. NPM is only needed for linting and testing.
+
+### Setup
+1. `git clone` this repository
+2. `npm install`
+
+### Publish
+The master branch is published on GitHub Pages at <https://hitontology.github.io/instancegenerator/>.
+Just push as normal and it will reflect on that page after a short while:
+
+1. perform changes
+2. `git add myfiles`
+3. `git commit -m "my commit message"`
+4. `git push`
+
+### Update
+
+1. `git pull`
+2. `npm update`
+3. `npm run build`
+
+Make sure it runs locally before updating on the server, see releasechecklist.md.
+
+### Code Style
+Specified in the ESlint config file `.eslintrc.json`.
+
+### Scripts
+* `npm run test` runs the mocha tests
+
+## Details
+### Intended Audience
+Medical informatics experts of the HITO project.
+
+### Usage Requirements
+Any modern browser should work as long as it supports ES6 modules. Optimized for PC. Internet Explorer is not supported.
