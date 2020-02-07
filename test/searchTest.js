@@ -30,7 +30,7 @@ describe('search', function()
       await search.init();
       for(const query of entry.queries)
       {
-        console.log(search.search(query));
+        console.log(query,search.search(query));
         assert.include(search.search(query),entry.instance);
       }
     }
