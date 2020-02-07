@@ -3,6 +3,8 @@ import * as rdf from '../js/rdf.js';
 
 const benchmark =
 [
+
+
   {
     class: "hito:FeatureClassified",
     graph: "http://hitontology.eu/ontology",
@@ -38,6 +40,14 @@ const benchmark =
     instance: "hito:Care_of_the_elderly_department_environment",
     queries: ["Care_of_the_elderly_department_environment", "Care of the elderly department environment", "Care of the elderly", "department environment", "elderly department", "care the elderly department"],
   },
+  {
+    class: "hito:DatabaseSystem",
+    graph: "http://hitontology.eu/ontology",
+    endpoint: "https://hitontology.eu/sparql",
+    instance: "hito:MySQL",
+    queries: ["MySQL", "mysql", "sql", "SQL"],
+  },
+
 ];
 
 for(const entry of benchmark)
