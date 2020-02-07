@@ -49,7 +49,7 @@ export default class Search
       OPTIONAL {?c skos:altLabel ?al.}
       OPTIONAL {?c skos:altLabel ?cmt.}
     }`;
-    const bindings = sparql.flat(await sparql.select(sparqlQuery,this.endpoint));
+    const bindings = sparql.flat(await sparql.select(sparqlQuery,null,this.endpoint));
     const items = [];
     const unpack = s => (s && s.split('|')) || [];
     for(const b of bindings)

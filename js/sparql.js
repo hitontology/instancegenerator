@@ -26,11 +26,8 @@ export async function select(query,graph=HITO_GRAPH, endpoint=HITO_ENDPOINT)
     const bindings = json.results.bindings;
 
     //console.groupCollapsed("SPARQL "+query.split('\n',1)[0]+"...");
-    console.log(query);
-    if(bindings.length<100)
-    {
-      console.table(bindings.map(b=>Object.keys(b).reduce((result,key)=>{result[key]=b[key].value;return result;},{})));
-    }
+    console.log(graph,endpoint,"\n",query);
+    console.table(bindings.slice(0,10).map(b=>Object.keys(b).reduce((result,key)=>{result[key]=b[key].value;return result;},{})));
     //console.log(url);
     console.groupEnd();
 

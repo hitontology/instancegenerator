@@ -30,8 +30,7 @@ describe('search', function()
       await search.init();
       for(const query of entry.queries)
       {
-        console.log(query,search.search(query));
-        assert.include(search.search(query),entry.instance);
+        assert.include(search.search(query),entry.instance,query);
       }
     }
   });
