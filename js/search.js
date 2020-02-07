@@ -18,6 +18,7 @@ const options =
   [
     {name:"l", weight: 0.7}, // label
     {name:"al", weight: 0.6}, // alternative label
+    {name:"cmt", weight: 0.4}, // alternative label
   ],
 };
 
@@ -40,23 +41,26 @@ export default class Search
     const sparqlQuery = `select ?c as ?uri
     group_concat(distinct(str(?l));separator="|") as ?l
     group_concat(distinct(str(?al));separator="|") as ?al
+    group_concat(distinct(str(?cmt));separator="|") as ?cmt
     ${froms}
     {
       ?c a <${this.clazz}>.
       OPTIONAL {?c rdfs:label ?l.}
       OPTIONAL {?c skos:altLabel ?al.}
+      OPTIONAL {?c skos:altLabel ?cmt.}
     }`;
     const bindings = sparql.flat(await sparql.select(sparqlQuery,this.endpoint));
     const items = [];
+    const unpack = s => (s && s.split('|')) || [];
     for(const b of bindings)
     {
       const item = {};
       items.push(item);
       const suffix = b.uri.replace(/.*\//,"");
       item.uri = b.uri;
-      const labels = (b.l && b.l.split('|')) || [];
-      item.l = [...labels,suffix];
-      item.l = [...new Set(item.l)]; // remove duplicates
+      item.l = [...new Set([...unpack(b.l),suffix])]; // remove duplicates
+      item.al = unpack(b.al);
+      item.cmt = unpack(b.cmt);
     }
     this.index = new Fuse(items,options);
     return items; // for testing
