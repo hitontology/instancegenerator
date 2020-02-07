@@ -2,7 +2,6 @@
 An RDF property.*/
 import * as rdf from "./rdf.js";
 import * as sparql from "./sparql.js";
-import Select from "./select.js";
 
 const OPROP = rdf.long("owl:ObjectProperty");
 

@@ -28,6 +28,3 @@ for(const clazz of classes)
   option.innerText = rdf.short(clazz);
 }
 setClass(select.value);
-
-//document.addEventListener("DOMContentLoaded",form.init);
-//document.addEventListener("submit",form.submit);
