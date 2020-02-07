@@ -1,68 +1,11 @@
-/** @module */
-import * as sparql from "./sparql.js";
+/** @module
+Form to create a new instance of the given OWL Class. */
 import * as rdf from "./rdf.js";
+import Property from "./property.js";
+import Select from "./select.js";
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
 const DPROP = rdf.long("owl:DatatypeProperty");
-const OPROP = rdf.long("owl:ObjectProperty");
-
-/** returns an array of instances of the given class */
-async function queryInstances(clazz)
-{
-  let [graph,endpoint] = [sparql.HITO_GRAPH,sparql.HITO_ENDPOINT];
-  if(clazz.includes("dbpedia.org/"))
-  {
-    [graph,endpoint] = [sparql.DBPEDIA_GRAPH,sparql.DBPEDIA_ENDPOINT];
-  }
-  const query  = `SELECT ?uri STR(SAMPLE(?label)) as ?label
-  {
-    ?uri a <${clazz}>.
-    OPTIONAL {?uri rdfs:label ?label. filter(langmatches(lang(?label),"en"))}
-  } ORDER BY ASC(?uri)`;
-  return sparql.flat(await sparql.select(query,graph,endpoint));
-}
-
-class Property
-{
-  /** */
-  constructor(uri,label,type,range,instances)
-  {
-    this.uri = uri;
-    this.label = label;
-    this.type = type;
-    if(!label) {console.log(range);this.label = rdf.short(uri);}
-    this.range = range;
-    this.instances=instances;
-  }
-
-  /** returns an array of all properties that have the given domain*/
-  static async domainProperties(domain)
-  {
-    const query=
-    `SELECT ?uri STR(SAMPLE(?label)) as ?label ?type ?range
-    {
-      ?uri rdfs:domain <${domain}>;
-      rdfs:range ?range;
-      rdf:type ?type.
-      FILTER(?type=owl:DatatypeProperty OR ?type=owl:ObjectProperty)
-      OPTIONAL {?uri rdfs:label ?label.}
-    }`;
-    const bindings = sparql.flat(await sparql.select(query));
-    const properties = [];
-    // parallelize
-    for(const b of bindings)
-    {
-      if(b.type!==OPROP) {continue;}
-      {b.promise = queryInstances(b.range);}
-    }
-    for(const b of bindings)
-    {
-      properties.push(new Property(b.uri,b.label,b.type,b.range,await b.promise));
-      b.promise=undefined;
-    }
-    return properties;
-  }
-}
 
 export default class Form
 {
@@ -112,25 +55,9 @@ export default class Form
         text.classList.add("textline");
         p.text = () => text.value;
       }
-      else
+      else if(p.instances)
       {
-        const select = document.createElement("select");
-        par.appendChild(select);
-        select.style.display="block";
-        select.classList.add("large");
-        select.name = p.uri;
-        select.id = p.uri;
-        select.setAttribute("multiple","");
-        if(!p.instances) {continue;}
-        for(const i of p.instances)
-        {
-          const option = document.createElement("option");
-          select.appendChild(option);
-          option.value = i.uri;
-          option.innerText = i.label;
-        //option.innerText = this.getLabel(i);
-        }
-        p.selected = () => [...select.options].filter(o => o.selected).map(o => o.value);
+        new Select(par,p);
       }
     }
   }
