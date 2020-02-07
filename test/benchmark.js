@@ -3,8 +3,6 @@ import * as rdf from '../js/rdf.js';
 
 const benchmark =
 [
-
-
   {
     class: "hito:FeatureClassified",
     graph: "http://hitontology.eu/ontology",
@@ -44,7 +42,7 @@ const benchmark =
     class: "hito:DatabaseSystem",
     graph: "http://hitontology.eu/ontology",
     endpoint: "https://hitontology.eu/sparql",
-    instance: "hito:MySQL",
+    instance: "hito:MySql",
     queries: ["MySQL", "mysql", "sql", "SQL"],
   },
 
