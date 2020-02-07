@@ -26,10 +26,10 @@ const benchmark =
   },
   {
     class: "http://dbpedia.org/class/yago/OperatingSystem106568134",
-    graph: "http://dbpedia.org/",
-    endpoint: "http://dbpedia.org/sparql",
+    graph: "http://dbpedia.org",
+    endpoint: "https://dbpedia.org/sparql",
     instance: "http://dbpedia.org/resource/Windows_95",
-    queries: ["Windows 95", "Windows", "Win", "Win 95", "WIN95", "Wimdows 95"],
+    queries: ["Windows 95", "Windows", "Win", "Win 95", "Wimdows 95", "Microsoft Windows 95"],
   },
   {
     class: "hito:OrganizationalUnitClassified",
