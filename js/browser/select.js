@@ -8,20 +8,36 @@ export default class Select
   {
     const container  = document.createElement("div");
     parent.appendChild(container);
+
     const select = document.createElement("select");
-    container.appendChild(select);
     select.style.display="block";
     select.classList.add("large");
     select.name = property.uri;
     select.id = property.uri;
     select.setAttribute("multiple","");
+    const options = [];
     for(const i of property.instances)
     {
       const option = document.createElement("option");
+      options.push(option);
       select.appendChild(option);
       option.value = i.uri;
       option.innerText = i.label;
     }
     property.selected = () => [...select.options].filter(o => o.selected).map(o => o.value);
+    const input = document.createElement("input");
+    input.addEventListener("change",(event)=>
+    {
+      if(input.value==="")
+      {
+        for(const o of options) {o.style.display="";}
+        return;
+      }
+      for(const o of options)
+      {
+        o.style.display="none";
+      }
+    });
+    container.append(input,select);
   }
 }
