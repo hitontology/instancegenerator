@@ -44,8 +44,11 @@ export default class Clazz
     }`;// ORDER BY ASC(?uri)`;
     const bindings = sparql.flat(await sparql.select(query,graph,endpoint));
     this.instances = [];
+    const unpack = s => (s && s.split('|')) || [];
     bindings.forEach(b=>
+    {
       this.instances.push(
-        new Instance(b.uri,b.l,b.al,b.cmt)));
+        new Instance(b.uri,unpack(b.l),unpack(b.al),unpack(b.cmt)));
+    });
   }
 }
