@@ -23,5 +23,8 @@
     "fuse.js": "^3.4.6",
     "isomorphic-fetch": "^2.2.1",
     "mocha": "7.0.0-esm1"
-  }
+  },
+  "mocha": {
+   "timeout": 15000
+ }
 }
