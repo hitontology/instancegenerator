@@ -1,3 +1,4 @@
+
 select.large {width:40em; height: 10em;}
 
 input.textline {width:4em; height: 1em;}
@@ -7,4 +8,18 @@ label {width: 100%;}
 {
  display: flex;
  flex-wrap: wrap;
+}
+
+@media (prefers-color-scheme: dark)
+{
+  *
+  {
+    background-color: black;
+    color: white;
+  }
+
+  select, option
+  {
+    background-color: #090505;
+  }
 }
