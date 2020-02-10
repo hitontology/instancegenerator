@@ -1,7 +1,7 @@
 /** @module
 Form to create a new instance of the given OWL Class. */
-import * as rdf from "./rdf.js";
-import Property from "./property.js";
+import * as rdf from "../rdf.js";
+import Property from "../property.js";
 import Select from "./select.js";
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
