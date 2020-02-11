@@ -32,7 +32,7 @@ class Clazz
       OPTIONAL {?uri skos:altLabel ?al.}
       OPTIONAL {?uri skos:altLabel ?cmt.}
     }`;// ORDER BY ASC(?uri)`;
-    const bindings = sparql.flat(await sparql.select(query,graph,endpoint));
+    const bindings = sparql.flat(await sparql.select(query,graph,endpoint,`select all instances of class ${this.uri}`));
     this.instances = [];
     const unpack = s => (s && s.split('|')) || [];
     bindings.forEach(b=>
