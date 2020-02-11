@@ -25,7 +25,6 @@ export default class Form
     submitButton.type="submit";
     submitButton.value="Create";
     this.container.append(h1,submitButton,this.form);
-    this.init().then({});
     this.submit=this.submit.bind(this);
     submitButton.addEventListener("click",this.submit);
   }
