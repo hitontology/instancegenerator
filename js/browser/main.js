@@ -9,22 +9,32 @@ const select = document.createElement("select");
 let activeForm;
 
 /** Sets the active form class. */
-function setClass(clazz)
+async function setClass(clazz)
 {
   if(activeForm) {activeForm.unregister();}
-  {activeForm = new Form(clazz);}
+  activeForm = new Form(clazz);
+  await activeForm.init();
 }
 
-select.addEventListener("change", (event)=>
+/** entry point */
+async function main()
 {
-  setClass(event.target.value);
-});
-document.body.appendChild(select);
-for(const clazz of classes)
-{
-  const option = document.createElement("option");
-  select.appendChild(option);
-  option.value = clazz;
-  option.innerText = rdf.short(clazz);
+  console.groupCollapsed("Init");
+  select.addEventListener("change", (event)=>
+  {
+    setClass(event.target.value);
+  });
+  document.body.appendChild(select);
+
+  for(const clazz of classes)
+  {
+    const option = document.createElement("option");
+    select.appendChild(option);
+    option.value = clazz;
+    option.innerText = rdf.short(clazz);
+  }
+  await setClass(select.value);
+  console.groupEnd();
 }
-setClass(select.value);
+
+main();
