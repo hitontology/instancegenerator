@@ -1,5 +1,4 @@
-import InstanceIndex from '../js/instanceIndex.js';
-import Clazz from '../js/clazz.js';
+import getClass from '../js/clazz.js';
 import chai from 'chai';
 const assert = chai.assert;
 import 'isomorphic-fetch';
@@ -14,12 +13,10 @@ describe('search', function()
   {
     for(const entry of benchmark)
     {
-      const c = new Clazz(entry.class);
-      await c.loadInstances();
-      const index = new InstanceIndex(c.instances);
+      const c = await getClass(entry.class);
       for(const query of entry.queries)
       {
-        const result = index.search(query);
+        const result = c.search(query);
         assert.include(result,entry.instance,query+" "+JSON.stringify(result));
       }
     }

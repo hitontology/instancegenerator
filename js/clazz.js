@@ -1,27 +1,17 @@
 /** An OWL class. */
 import Instance from "./instance.js";
+import InstanceIndex from "./instanceIndex.js";
 import * as sparql from "./sparql.js";
 
 const classes = new Map();
 
-export default class Clazz
+class Clazz
 {
-  /** Do not use the constructor but the static async get function instead (asynchronous multiton pattern). */
-  constructor(uri)
-  {
-    this.uri = uri;
-  }
+  /** */
+  constructor(uri) {this.uri = uri;}
 
-  /** Get the class that has the given URI with all its instances. Only one class is generated for any one URI.*/
-  static async get(uri)
-  {
-    let clazz = classes.get(uri);
-    if(clazz) {return clazz;}
-    clazz = new Clazz(uri);
-    const p = clazz.loadInstances().then(() => {return clazz;});
-    classes.set(uri,p);
-    return p;
-  }
+  /** Searches amongst the instances, see InstanceIndex#search() */
+  search(query) {return this.instanceIndex.search(query);}
 
   /** Gets all instances array containing all instances of the given class */
   async loadInstances()
@@ -50,5 +40,24 @@ export default class Clazz
       this.instances.push(
         new Instance(b.uri,unpack(b.l),unpack(b.al),unpack(b.cmt)));
     });
+
+    this.instanceIndex = new InstanceIndex(this.instances);
   }
+}
+
+/** Get the class that has the given URI with all its instances. Only one class is generated for any one URI.
+    Asynchronous multiton pattern, see https://stackoverflow.com/questions/60152736/asynchronous-multiton-pattern-in-javascript.*/
+export default async function getClass(uri)
+{
+  let clazz = classes.get(uri);
+  if(clazz)
+  {
+    // already called with the same URI, not necessarily finished but we never want to run it twice
+    // return value is a promise but because the method is async it should be used with await and then it will get unpacked
+    return clazz;
+  }
+  clazz = new Clazz(uri);
+  const promise = clazz.loadInstances().then(() => {return clazz;});
+  classes.set(uri,promise);
+  return promise;
 }

@@ -55,7 +55,7 @@ export default class Form
         text.classList.add("textline");
         p.text = () => text.value;
       }
-      else if(p.instances)
+      else if(p)
       {
         new Select(par,p);
       }

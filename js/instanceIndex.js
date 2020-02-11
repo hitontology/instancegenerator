@@ -32,7 +32,7 @@ export default class InstanceIndex
     for(const i of instances)
     {
       const labels = [...new Set([...i.labels,i.suffix])]; // remove duplicates
-      const item = {uri: i.uri, l: labels, al: i.altesnativeLabel, cmt: i.comments};
+      const item = {uri: i.uri, l: labels, al: i.alternativeLabel, cmt: i.comments};
       items.push(item);
     }
     this.index = new Fuse(items,options);

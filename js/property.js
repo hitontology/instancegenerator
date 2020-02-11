@@ -2,19 +2,19 @@
 An RDF property.*/
 import * as rdf from "./rdf.js";
 import * as sparql from "./sparql.js";
+import getClass from '../js/clazz.js';
 
 const OPROP = rdf.long("owl:ObjectProperty");
 
 export default class Property
 {
   /** */
-  constructor(uri,label,type,range)
+  constructor(uri,label,type)
   {
     this.uri = uri;
     this.label = label;
     this.type = type;
-    if(!label) {console.log(range);this.label = rdf.short(uri);}
-    this.range = range;
+    if(!label) {this.label = rdf.short(uri);}
   }
 
   /** returns an array of all properties that have the given domain*/
@@ -41,8 +41,8 @@ export default class Property
     */
     for(const b of bindings)
     {
-      properties.push(new Property(b.uri,b.label,b.type,b.range,await b.promise));
-      b.promise=undefined;
+      const p = new Property(b.uri,b.label,b.type,b.range);
+      p.range = await getClass(b.range);
     }
     return properties;
   }
