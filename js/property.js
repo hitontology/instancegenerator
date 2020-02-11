@@ -29,7 +29,7 @@ export default class Property
       FILTER(?type=owl:DatatypeProperty OR ?type=owl:ObjectProperty)
       OPTIONAL {?uri rdfs:label ?label.}
     }`;
-    const bindings = sparql.flat(await sparql.select(query));
+    const bindings = sparql.flat(await sparql.select(query,undefined,undefined,"select all properties that have the domain "+rdf.short(domain)));
     const properties = [];
     // parallelize
     /*
