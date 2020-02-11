@@ -19,6 +19,7 @@ export default class Select
     for(const i of property.range.instances)
     {
       const option = document.createElement("option");
+      option.instance = i;
       options.push(option);
       select.appendChild(option);
       option.value = i.uri;
@@ -33,9 +34,10 @@ export default class Select
         for(const o of options) {o.style.display="";}
         return;
       }
+      const hits = property.range.search(input.value);
       for(const o of options)
       {
-        o.style.display="none";
+        o.style.display = hits.includes(o.instance.uri)?"":"none";
       }
     });
     container.append(input,select);
