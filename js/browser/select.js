@@ -16,8 +16,7 @@ export default class Select
     select.id = property.uri;
     select.setAttribute("multiple","");
     const options = [];
-
-    for(const i of property.instances)
+    for(const i of property.range.instances)
     {
       const option = document.createElement("option");
       options.push(option);
