@@ -3,7 +3,7 @@ import Clazz from '../js/clazz.js';
 import chai from 'chai';
 const assert = chai.assert;
 import 'isomorphic-fetch';
-import benchmark from "./benchmark.js";
+import benchmark from "./instanceIndexBenchmark.js";
 
 import Fuse from 'fuse.js';
 global.Fuse = Fuse;
