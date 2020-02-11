@@ -22,7 +22,7 @@ export default class Select
       options.push(option);
       select.appendChild(option);
       option.value = i.uri;
-      option.innerText = i.label;
+      option.innerText = i.label();
     }
     property.selected = () => [...select.options].filter(o => o.selected).map(o => o.value);
     const input = document.createElement("input");
