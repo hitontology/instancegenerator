@@ -3,7 +3,7 @@
 The graphical user interface to generate new instances for HITO, starting with software products.
 
 ## Development
-You only need Git, NPM and a browser. NPM is only needed for linting and testing.
+You only need Git, NPM and a browser. NPM is only needed for linting and testing. CORS over the file system needs to not be blocked by your browser. In Firefox, for example, you can achieve this by going to `about:config` and setting `privacy.file_unique_origin` to `false`.
 
 ### Setup
 1. `git clone` this repository
