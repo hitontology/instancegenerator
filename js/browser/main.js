@@ -19,7 +19,7 @@ async function setClass(clazz)
 /** entry point */
 async function main()
 {
-  console.groupCollapsed("Init");
+  console.group("Init");
   select.addEventListener("change", (event)=>
   {
     setClass(event.target.value);
