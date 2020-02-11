@@ -27,7 +27,6 @@ export default class InstanceIndex
   /** Fills the index with the instances .*/
   constructor(instances)
   {
-    console.log("Create Fuse Search Index");
     const items = [];
     for(const i of instances)
     {
