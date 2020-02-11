@@ -15,7 +15,7 @@ ASK queries should also work but better use {@link ask} instead as it is more co
 {@param endpoint} An optional SPARQL endpoint. By default, HITO is used.
 @return {Promise<object[]>} A promise of a set of SPARQL select result bindings.
 */
-export async function select(query,graph=HITO_GRAPH, endpoint=HITO_ENDPOINT)
+export async function select(query,graph=HITO_GRAPH, endpoint=HITO_ENDPOINT, debugMessage)
 {
   let url = endpoint + '?query=' + encodeURIComponent(query) + '&format=json';
   if(graph) {url+= '&default-graph-uri=' + encodeURIComponent(graph);}
@@ -25,7 +25,8 @@ export async function select(query,graph=HITO_GRAPH, endpoint=HITO_ENDPOINT)
     const json = await response.json();
     const bindings = json.results.bindings;
 
-    //console.groupCollapsed("SPARQL "+query.split('\n',1)[0]+"...");
+    if(!debugMessage) {debugMessage = query.split('\n',1)[0]+"...";}
+    console.groupCollapsed("SPARQL "+ debugMessage);
     console.log(graph,endpoint,"\n",query);
     console.table(bindings.slice(0,5).map(b=>Object.keys(b).reduce((result,key)=>{result[key]=b[key].value;return result;},{})));
     //console.log(url);
