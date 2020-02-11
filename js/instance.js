@@ -1,15 +1,31 @@
 /** @module
 An instance of an OWL class.*/
 
+/** returns string and language tag of a label*/
+function labelParts(l) {return l.split("@");}
+
 export default class Instance
 {
   /** Human readable representation */
   label()
   {
-    if(this.labels.length>0) {return this.labels[0];}
-    if(this.altLabels.length>0) {return this.altLabels[0];}
+    let label;
+    const candidates = [...this.labels,...this.altLabels];
+
+    for(const c of candidates)
+    {
+      for(const lang of ["en","de",""])
+      {
+        if(labelParts(c)[1]===lang)
+        {
+          label = labelParts(c)[0];
+          return label;
+        }
+      }
+    }
     return this.suffix;
   }
+
   /** */
   constructor(uri,labels,altLabels,comments)
   {

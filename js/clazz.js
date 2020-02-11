@@ -23,9 +23,9 @@ class Clazz
       [graph,endpoint] = [sparql.DBPEDIA_GRAPH,sparql.DBPEDIA_ENDPOINT];
     }
     const query  = `SELECT ?uri
-    group_concat(distinct(str(?l));separator="|") as ?l
-    group_concat(distinct(str(?al));separator="|") as ?al
-    group_concat(distinct(str(?cmt));separator="|") as ?cmt
+    GROUP_CONCAT(DISTINCT(CONCAT(?l,"@",lang(?l)));SEPARATOR="|") AS ?l
+    GROUP_CONCAT(DISTINCT(CONCAT(?al,"@",lang(?al)));SEPARATOR="|") AS ?al
+    GROUP_CONCAT(DISTINCT(CONCAT(?cmt,"@",lang(?cmt)));SEPARATOR="|") AS ?cmt
     {
       ?uri a <${this.uri}>.
       OPTIONAL {?uri rdfs:label ?l.}
