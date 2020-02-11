@@ -26,7 +26,7 @@ export async function select(query,graph=HITO_GRAPH, endpoint=HITO_ENDPOINT, deb
     const bindings = json.results.bindings;
 
     if(!debugMessage) {debugMessage = query.split('\n',1)[0]+"...";}
-    console.groupCollapsed("SPARQL "+ debugMessage);
+    console.groupCollapsed(`SPARQL ${debugMessage}: ${bindings.length} results`);
     console.log(graph,endpoint,"\n",query);
     console.table(bindings.slice(0,5).map(b=>Object.keys(b).reduce((result,key)=>{result[key]=b[key].value;return result;},{})));
     //console.log(url);
