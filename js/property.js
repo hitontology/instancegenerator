@@ -43,6 +43,7 @@ export default class Property
     {
       const p = new Property(b.uri,b.label,b.type,b.range);
       p.range = await getClass(b.range);
+      properties.push(p);
     }
     return properties;
   }
