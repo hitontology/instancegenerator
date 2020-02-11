@@ -16,6 +16,7 @@ export default class Select
     select.id = property.uri;
     select.setAttribute("multiple","");
     const options = [];
+
     for(const i of property.instances)
     {
       const option = document.createElement("option");
@@ -26,7 +27,7 @@ export default class Select
     }
     property.selected = () => [...select.options].filter(o => o.selected).map(o => o.value);
     const input = document.createElement("input");
-    input.addEventListener("change",(event)=>
+    input.addEventListener("change",()=>
     {
       if(input.value==="")
       {
