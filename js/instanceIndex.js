@@ -15,7 +15,7 @@ const options =
   id: "uri",
   keys:
   [
-    {name:"l", weight: 0.7}, // label
+    {name:"l", weight: 0.9}, // label
     {name:"al", weight: 0.6}, // alternative label
     {name:"cmt", weight: 0.4}, // alternative label
   ],
