@@ -4,6 +4,7 @@ input.textline, input.search {width:40em; height: 1em;}
 
 label {min-width: 20em; display:block;}
 
+body {margin-left: 0.5em;}
 /*
 
 .form-item-container
