@@ -46,7 +46,7 @@ export class Property
     */
     for(const b of bindings)
     {
-      const p = new Property(b.uri,b.label,b.type,b.range);
+      const p = new Property(b.uri,b.label,b.type);
       p.range = await getClass(b.range);
       properties.push(p);
     }

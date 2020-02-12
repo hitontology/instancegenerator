@@ -2,13 +2,14 @@
 import Instance from "./instance.js";
 import InstanceIndex from "./instanceIndex.js";
 import * as sparql from "./sparql.js";
+import * as rdf from "./rdf.js";
 
 const classes = new Map();
 
 class Clazz
 {
   /** */
-  constructor(uri) {this.uri = uri;}
+  constructor(uri,label) {this.uri = uri;this.label=label;}
 
   /** Searches amongst the instances, see InstanceIndex#search() */
   search(query) {return this.instanceIndex.search(query);}
@@ -45,6 +46,28 @@ class Clazz
   }
 }
 
+let labels = null;
+
+/** Fetches all class labels*/
+async function getLabel(uri)
+{
+  if(labels===null)
+  {
+    labels = new Map();
+    const labelQuery  = `SELECT ?clazz SAMPLE(?label) as ?label
+  {
+    ?clazz a owl:Class;
+       rdfs:label ?label.
+    FILTER(LANGMATCHES(LANG(?label),"en"))
+  }`;
+    const bindings = sparql.flat(
+      [...await sparql.select(labelQuery,sparql.HITO_GRAPH,sparql.HITO_ENDPOINT,`select all labels of classes from HITO`),
+        ...await sparql.select(labelQuery,sparql.DBPEDIA_GRAPH,sparql.DBPEDIA_ENDPOINT,`select all labels of classes from DBpedia`)]);
+    bindings.forEach((b) => {labels.set(b.clazz,b.label);});
+  }
+  return labels.get(uri) || rdf.niceSuffix(uri);
+}
+
 /** Get the class that has the given URI with all its instances. Only one class is generated for any one URI.
     Asynchronous multiton pattern, see https://stackoverflow.com/questions/60152736/asynchronous-multiton-pattern-in-javascript.*/
 export default async function getClass(uri)
@@ -56,7 +79,8 @@ export default async function getClass(uri)
     // return value is a promise but because the method is async it should be used with await and then it will get unpacked
     return clazz;
   }
-  clazz = new Clazz(uri);
+
+  clazz = new Clazz(uri,await getLabel(uri));
   const promise = clazz.loadInstances().then(() => {return clazz;});
   classes.set(uri,promise);
   return promise;

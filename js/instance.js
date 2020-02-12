@@ -1,5 +1,6 @@
 /** @module
 An instance of an OWL class.*/
+import * as rdf from "./rdf.js";
 
 /** returns string and language tag of a label*/
 function labelParts(l) {return l.split("@");}
@@ -30,7 +31,7 @@ export default class Instance
   constructor(uri,labels,altLabels,comments)
   {
     this.uri = uri;
-    this.suffix = uri.replace(/.*\//,"");
+    this.suffix = rdf.suffix(uri);
     this.labels = labels;
     this.altLabels = altLabels;
     this.comments = comments;
