@@ -19,16 +19,22 @@ export default class Select
     select.name = property.uri;
     select.id = property.uri;
     select.setAttribute("multiple","");
+    const labelOption = document.createElement("option"); // not actually clickable, used by semantic ui as placeholder when no items are selected
+    labelOption.innerText = property.range.label;
+    labelOption.value="";
+    select.appendChild(labelOption);
     const options = [];
+
     for(const i of property.range.instances)
     {
       const option = document.createElement("option");
       option.instance = i;
       options.push(option);
-      select.appendChild(option);
       option.value = i.uri;
       option.innerText = i.label();
     }
+    options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
+    select.append(...options);
     property.selected = () => [...select.options].filter(o => o.selected).map(o => o.value);
     if(SEARCH)
     {
