@@ -32,7 +32,7 @@ export default class Form
   async init()
   {
     const itemContainer = document.createElement("div");
-    itemContainer.classList.add("form-item-container");
+    itemContainer.classList.add("form-item-container","ui","form");
     this.form.appendChild(itemContainer);
 
     this.properties = await Property.domainProperties(this.clazz);
@@ -40,7 +40,7 @@ export default class Form
     for(const p of this.properties)
     {
       const item =  document.createElement("div");
-      item.classList.add("form-item");
+      item.classList.add("form-item","field");
       itemContainer.appendChild(item);
       const label = document.createElement("label");
       label.for= p.uri;

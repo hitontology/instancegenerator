@@ -1,7 +1,7 @@
 /** @module */
 import Form from "./form.js";
-import * as rdf from "../rdf.js";
 /*
+import * as rdf from "../rdf.js";
 const classes = ["http://hitontology.eu/ontology/SoftwareProduct","http://hitontology.eu/ontology/Study",
   "http://hitontology.eu/ontology/FeatureClassified"];
 const select = document.createElement("select");
@@ -36,7 +36,8 @@ async function main()
   }
   await setClass(select.value);
   */
-  setClass("http://hitontology.eu/ontology/SoftwareProduct");
+  await setClass("http://hitontology.eu/ontology/SoftwareProduct");
+  $('.ui.dropdown').dropdown();
   console.groupEnd();
 }
 

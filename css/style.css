@@ -1,9 +1,10 @@
-
-select.large {width:40em; height: 10em;}
+select.large {width:40em; height: 20em;}
 
 input.textline, input.search {width:40em; height: 1em;}
 
-label {width: 100%;}
+label {min-width: 20em; display:block;}
+
+/*
 
 .form-item-container
 {
@@ -16,7 +17,6 @@ label {width: 100%;}
   width:40em;
   margin: 0.5em;
 }
-
 @media (prefers-color-scheme: dark)
 {
   *
@@ -30,3 +30,4 @@ label {width: 100%;}
     background-color: #090505;
   }
 }
+*/
