@@ -1,11 +1,10 @@
 /** @module
 Form to create a new instance of the given OWL Class. */
 import * as rdf from "../rdf.js";
-import Property from "../property.js";
+import {Property,DPROP} from "../property.js";
 import Select from "./select.js";
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
-const DPROP = rdf.long("owl:DatatypeProperty");
 
 export default class Form
 {
@@ -14,8 +13,8 @@ export default class Form
   {
     this.clazz = clazz;
     this.labelForResource = new Map();
-
     this.container = document.createElement("div");
+    this.container.classList.add("form-container"); // flexbox
     document.body.appendChild(this.container);
     const h1 = document.createElement("h1");
     h1.innerText = "Add "+rdf.short(clazz);
@@ -32,31 +31,32 @@ export default class Form
   /** load the data from the SPARQL endpoint and populate */
   async init()
   {
-    const classContainer = document.createElement("div");
-    classContainer.classList.add("select-container"); // flexbox
-    this.form.appendChild(classContainer);
+    const itemContainer = document.createElement("div");
+    itemContainer.classList.add("form-item-container");
+    this.form.appendChild(itemContainer);
 
     this.properties = await Property.domainProperties(this.clazz);
 
     for(const p of this.properties)
     {
-      const par =  document.createElement("p");
-      classContainer.appendChild(par);
+      const item =  document.createElement("div");
+      item.classList.add("form-item");
+      itemContainer.appendChild(item);
       const label = document.createElement("label");
       label.for= p.uri;
       label.innerText = p.label;
-      par.appendChild(label);
+      item.appendChild(label);
       if(p.type===DPROP)
       {
         const text = document.createElement("input");
-        par.appendChild(text);
+        item.appendChild(text);
         text.setAttribute("type",text);
         text.classList.add("textline");
         p.text = () => text.value;
       }
-      else if(p)
+      else
       {
-        new Select(par,p);
+        new Select(item,p);
       }
     }
   }

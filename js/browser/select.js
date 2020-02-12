@@ -6,9 +6,9 @@ export default class Select
   /** Create a container where the user can select from the given values and a search field and attach it to the given parent.*/
   constructor(parent,property)
   {
-    const container  = document.createElement("div");
-    parent.appendChild(container);
-
+    //const container  = document.createElement("div");
+    //parent.appendChild(container);
+    const container = parent;
     const select = document.createElement("select");
     select.style.display="block";
     select.classList.add("large");
@@ -27,6 +27,7 @@ export default class Select
     }
     property.selected = () => [...select.options].filter(o => o.selected).map(o => o.value);
     const input = document.createElement("input");
+    input.classList.add("search");
     input.addEventListener("change",()=>
     {
       if(input.value==="")

@@ -4,17 +4,21 @@ import * as rdf from "./rdf.js";
 import * as sparql from "./sparql.js";
 import getClass from '../js/clazz.js';
 
-const OPROP = rdf.long("owl:ObjectProperty");
+export const OPROP = rdf.long("owl:ObjectProperty");
+export const DPROP = rdf.long("owl:DatatypeProperty");
 
-export default class Property
+const DEFAULT_PROPERTIES = [];
+
+export class Property
 {
   /** */
   constructor(uri,label,type)
   {
     this.uri = uri;
     this.label = label;
-    this.type = type;
     if(!label) {this.label = rdf.short(uri);}
+    this.type = type;
+    if(type!==OPROP&&type!==DPROP) {console.warn(`Unknown type ${type} for property ${uri} with label ${label}.`);}
   }
 
   /** returns an array of all properties that have the given domain*/
@@ -31,6 +35,7 @@ export default class Property
     }`;
     const bindings = sparql.flat(await sparql.select(query,undefined,undefined,"select all properties that have the domain "+rdf.short(domain)));
     const properties = [];
+    properties.push(...DEFAULT_PROPERTIES);
     // parallelize
     /*
     for(const b of bindings)
@@ -48,3 +53,7 @@ export default class Property
     return properties;
   }
 }
+
+export const RDFS_LABEL = new Property(rdf.long("rdfs:label"),"label",DPROP);
+export const RDFS_COMMENT = new Property(rdf.long("rdfs:comment"),"comment",DPROP);
+DEFAULT_PROPERTIES.push(RDFS_LABEL,RDFS_COMMENT);

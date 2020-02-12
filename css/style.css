@@ -1,13 +1,20 @@
 
 select.large {width:40em; height: 10em;}
 
-input.textline {width:4em; height: 1em;}
+input.textline, input.search {width:40em; height: 1em;}
 
 label {width: 100%;}
-.select-container
+
+.form-item-container
 {
  display: flex;
  flex-wrap: wrap;
+}
+
+.form-item
+{
+  width:40em;
+  margin: 0.5em;
 }
 
 @media (prefers-color-scheme: dark)
