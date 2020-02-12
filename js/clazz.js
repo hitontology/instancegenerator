@@ -34,7 +34,7 @@ class Clazz
     }`;// ORDER BY ASC(?uri)`;
     const bindings = sparql.flat(await sparql.select(query,graph,endpoint,`select all instances of class ${this.uri}`));
     this.instances = [];
-    const unpack = s => (s && s.split('|')) || [];
+    const unpack = s => (s && (s!=="@") && s.split('|')) || []; // "@" occurs on 0 results
     bindings.forEach(b=>
     {
       this.instances.push(
