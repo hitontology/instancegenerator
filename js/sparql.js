@@ -8,8 +8,8 @@ const HITO_ENDPOINT = "https://hitontology.eu/sparql";
 const DBPEDIA_GRAPH = "http://dbpedia.org";
 const DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql";
 
-export const DBPEDIA = {graph: DBPEDIA_GRAPH,endpoint: DBPEDIA_ENDPOINT};
-export const HITO = {graph: HITO_GRAPH,endpoint: HITO_ENDPOINT};
+export const DBPEDIA = {graph: DBPEDIA_GRAPH,endpoint: DBPEDIA_ENDPOINT, name: "DBpedia"};
+export const HITO = {graph: HITO_GRAPH,endpoint: HITO_ENDPOINT, name: "HITO"};
 
 const LOG = false;
 

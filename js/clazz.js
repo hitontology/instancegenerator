@@ -39,19 +39,23 @@ class Clazz extends Resource
     const bindings = [];
     for(const source of sources)
     {
-      bindings.push(...sparql.flat(await sparql.select(query,source,`select all instances of class ${this.uri} from `+source)));
-      this.instances = [];
-      const unpack = s => (s && (s!=="@") && s.split('|')) || []; // "@" occurs on 0 results
-      bindings.forEach(b=>
+      bindings.push(...sparql.flat(await sparql.select(query,source,`select all instances of class ${this.uri} from `+source.name)));
+    }
+    //console.log(bindings);
+    this.instances = [];
+    const unpack = s => (s && (s!=="@") && s.split('|')) || []; // "@" occurs on 0 results
+    bindings.forEach(b=>
+    {
+      if(b.uri.includes("dbpedia")) {console.log("***************************************************************",b);}
       {
         this.instances.push(
           new Resource(b.uri,unpack(b.l),unpack(b.al),unpack(b.cmt)));
-      });
-
+      }
+    });
     //this.instanceIndex = new ResourceIndex(this.instances);
-    }
   }
 }
+
 
 /** @type {Promise<Class>}  */
 let owlClassInstances = null;
@@ -79,7 +83,7 @@ async function queryClass(uri)
 }
 
 /** Get the class that has the given URI with all its instances. Only one class is generated for any one URI.
-    Asynchronous multiton pattern, see https://stackoverflow.com/questions/60152736/asynchronous-multiton-pattern-in-javascript.*/
+  Asynchronous multiton pattern, see https://stackoverflow.com/questions/60152736/asynchronous-multiton-pattern-in-javascript.*/
 export default async function getClass(uri)
 {
   //console.log(uri);
