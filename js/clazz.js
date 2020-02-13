@@ -1,6 +1,6 @@
 /** An OWL class. */
 import Instance from "./instance.js";
-import InstanceIndex from "./instanceIndex.js";
+//import InstanceIndex from "./instanceIndex.js";
 import * as sparql from "./sparql.js";
 import * as rdf from "./rdf.js";
 
@@ -42,7 +42,7 @@ class Clazz
         new Instance(b.uri,unpack(b.l),unpack(b.al),unpack(b.cmt)));
     });
 
-    this.instanceIndex = new InstanceIndex(this.instances);
+    //this.instanceIndex = new InstanceIndex(this.instances);
   }
 }
 

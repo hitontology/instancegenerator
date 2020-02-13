@@ -15,7 +15,7 @@ export default class Select
     container.append(select);
     //select.style.display="block";
     select.classList.add("large");
-    select.classList.add("ui","fluid","dropdown","selection","multiple");
+    select.classList.add("ui","fluid","dropdown","selection","multiple","search");
     select.name = property.uri;
     select.id = property.uri;
     select.setAttribute("multiple","");
