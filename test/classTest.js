@@ -14,7 +14,7 @@ describe('Clazz', function()
     for(const uri of Object.keys(benchmark))
     {
       const promises = [];
-      for(let i=0;i<1000;i++) // test caching
+      for(let i=0;i<100;i++) // test caching
       {
         promises.push(getClass(uri));
       }

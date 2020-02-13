@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+  <!--
+  <script src="node_modules/semantic-ui-dropdown/dropdown.js"></script>
+  <link rel="stylesheet" href="node_modules/semantic-ui-dropdown/dropdown.css">
+  <script src="node_modules/semantic-ui-transition/transition.js"></script>
+  <link rel="stylesheet" href="node_modules/semantic-ui-transition/transition.css">
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+<link rel="stylesheet" href="css/style.css">
+
+<script type="module" src="./js/browser/catalogueSelect.js"></script>
+<script type="module">
+import CatalogueSelect from './js/browser/catalogueSelect.js';
+import {featureCatalogue} from './js/catalogue.js';
+
+async function init()
+{
+  $('.ui.dropdown').dropdown();
+
+  new CatalogueSelect(document.body,await featureCatalogue());
+}
+ window.init = init;
+
+</script>
+
+</head>
+<body onLoad="init()">
+
+  <template id="categorySearch">
+    <div class="ui search">
+      <div class="ui icon input">
+        <input class="prompt" type="text" placeholder="Search ">
+        <i class="search icon"></i>
+      </div>
+      <div class="results"></div>
+    </div>
+  </template>
+
+  <select name="skills" multiple="" multiple class="ui dropdown fluid search" >
+    <option value="">Skills</option>
+    <option value="angular">Angular</option>
+    <option value="css">CSS</option>
+    <option value="design">Graphic Design</option>
+    <option value="ember">Ember</option>
+    <option value="html">HTML</option>
+    <option value="ia">Information Architecture</option>
+    <option value="javascript">Javascript</option>
+    <option value="mech">Mechanical Engineering</option>
+    <option value="meteor">Meteor</option>
+    <option value="node">NodeJS</option>
+    <option value="plumbing">Plumbing</option>
+    <option value="python">Python</option>
+    <option value="rails">Rails</option>
+    <option value="react">React</option>
+    <option value="repair">Kitchen Repair</option>
+    <option value="ruby">Ruby</option>
+    <option value="ui">UI Design</option>
+    <option value="ux">User Experience</option>
+  </select>
+
+</body>
+</html>

@@ -34,7 +34,7 @@ export default class CatalogueSelect
         .search({
           type: 'category',
           source: categoryContent,
-          fullTextSearch: 'true',
+          fullTextSearch: true,
           maxResults: 20,
           //searchFields: ...
           minCharacters: 0,

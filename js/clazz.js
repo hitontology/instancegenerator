@@ -1,15 +1,18 @@
 /** An OWL class. */
-import Instance from "./instance.js";
-//import InstanceIndex from "./instanceIndex.js";
+import Resource from "./resource.js";
+//import ResourceIndex from "./resourceIndex.js";
 import * as sparql from "./sparql.js";
 import * as rdf from "./rdf.js";
 
 const classes = new Map();
 
-class Clazz
+class Clazz extends Resource
 {
   /** */
-  constructor(uri,label) {this.uri = uri;this.label=label;}
+  constructor(resource)
+  {
+    super(resource.uri,resource.labels,resource.altLabels,resource.comments);
+  }
 
   /** Searches amongst the instances, see InstanceIndex#search() */
   search(query) {return this.instanceIndex.search(query);}
@@ -18,11 +21,11 @@ class Clazz
   async loadInstances()
   {
     if(this.instances) {return;}
-    let [graph,endpoint] = [undefined,undefined]; // default values
-    if(this.uri.includes("dbpedia.org/"))
-    {
-      [graph,endpoint] = [sparql.DBPEDIA_GRAPH,sparql.DBPEDIA_ENDPOINT];
-    }
+    let sources = [];
+    //[graph,endpoint] = [undefined,undefined]; // default values
+    if(this.uri.includes("dbpedia.org/")) {sources = [sparql.DBPEDIA];}
+    else if(this.uri.includes("hitontology.eu/"))  {sources = [sparql.HITO];}
+    else {sources = [sparql.HITO,sparql.DBPEDIA];}
     const query  = `SELECT ?uri
     GROUP_CONCAT(DISTINCT(CONCAT(?l,"@",lang(?l)));SEPARATOR="|") AS ?l
     GROUP_CONCAT(DISTINCT(CONCAT(?al,"@",lang(?al)));SEPARATOR="|") AS ?al
@@ -33,55 +36,61 @@ class Clazz
       OPTIONAL {?uri skos:altLabel ?al.}
       OPTIONAL {?uri skos:altLabel ?cmt.}
     }`;// ORDER BY ASC(?uri)`;
-    const bindings = sparql.flat(await sparql.select(query,graph,endpoint,`select all instances of class ${this.uri}`));
-    this.instances = [];
-    const unpack = s => (s && (s!=="@") && s.split('|')) || []; // "@" occurs on 0 results
-    bindings.forEach(b=>
+    const bindings = [];
+    for(const source of sources)
     {
-      this.instances.push(
-        new Instance(b.uri,unpack(b.l),unpack(b.al),unpack(b.cmt)));
-    });
+      bindings.push(...sparql.flat(await sparql.select(query,source,`select all instances of class ${this.uri} from `+source)));
+      this.instances = [];
+      const unpack = s => (s && (s!=="@") && s.split('|')) || []; // "@" occurs on 0 results
+      bindings.forEach(b=>
+      {
+        this.instances.push(
+          new Resource(b.uri,unpack(b.l),unpack(b.al),unpack(b.cmt)));
+      });
 
-    //this.instanceIndex = new InstanceIndex(this.instances);
+    //this.instanceIndex = new ResourceIndex(this.instances);
+    }
   }
 }
 
-let labels = null;
+/** @type {Promise<Class>}  */
+let owlClassInstances = null;
 
-/** Fetches all class labels*/
-async function getLabel(uri)
+/** Query the class that has the given URI with all its instances.*/
+async function queryClass(uri)
 {
-  if(labels===null)
+  if(!owlClassInstances)
   {
-    labels = new Map();
-    const labelQuery  = `SELECT ?clazz SAMPLE(?label) as ?label
-  {
-    ?clazz a owl:Class;
-       rdfs:label ?label.
-    FILTER(LANGMATCHES(LANG(?label),"en"))
-  }`;
-    const bindings = sparql.flat(
-      [...await sparql.select(labelQuery,sparql.HITO_GRAPH,sparql.HITO_ENDPOINT,`select all labels of classes from HITO`),
-        ...await sparql.select(labelQuery,sparql.DBPEDIA_GRAPH,sparql.DBPEDIA_ENDPOINT,`select all labels of classes from DBpedia`)]);
-    bindings.forEach((b) => {labels.set(b.clazz,b.label);});
+    // initial fetching of all classes
+    const c = new Clazz(new Resource(rdf.long("owl:Class"),[],[],[]));
+    owlClassInstances = c.loadInstances().then(()=>
+    {
+      const m = new Map();
+      c.instances.forEach(i=>{m.set(i.uri,i);});
+      return m;
+    },
+    );
   }
-  return labels.get(uri) || rdf.niceSuffix(uri);
+  const instance = (await owlClassInstances).get(uri);
+  if(!instance) {throw("Class does not exist: "+uri);}
+  const clazz = new Clazz(instance);
+  await clazz.loadInstances();
+  return clazz;
 }
 
 /** Get the class that has the given URI with all its instances. Only one class is generated for any one URI.
     Asynchronous multiton pattern, see https://stackoverflow.com/questions/60152736/asynchronous-multiton-pattern-in-javascript.*/
 export default async function getClass(uri)
 {
+  //console.log(uri);
   let clazz = classes.get(uri);
-  if(clazz)
+  //console.log("class",clazz);
+  if(!clazz)
   {
     // already called with the same URI, not necessarily finished but we never want to run it twice
     // return value is a promise but because the method is async it should be used with await and then it will get unpacked
-    return clazz;
+    clazz = queryClass(uri);
+    classes.set(uri,clazz);
   }
-
-  clazz = new Clazz(uri,await getLabel(uri));
-  const promise = clazz.loadInstances().then(() => {return clazz;});
-  classes.set(uri,promise);
-  return promise;
+  return clazz;
 }

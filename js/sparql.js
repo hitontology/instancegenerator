@@ -2,11 +2,16 @@
 Functions for querying the HITO SPARQL endpoint.
 @module */
 
-export const HITO_GRAPH = "http://hitontology.eu/ontology";
-export const HITO_ENDPOINT = "https://hitontology.eu/sparql";
+const HITO_GRAPH = "http://hitontology.eu/ontology";
+const HITO_ENDPOINT = "https://hitontology.eu/sparql";
 
-export const DBPEDIA_GRAPH = "http://dbpedia.org";
-export const DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql";
+const DBPEDIA_GRAPH = "http://dbpedia.org";
+const DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql";
+
+export const DBPEDIA = {graph: DBPEDIA_GRAPH,endpoint: DBPEDIA_ENDPOINT};
+export const HITO = {graph: HITO_GRAPH,endpoint: HITO_ENDPOINT};
+
+const LOG = false;
 
 /** Query public SNIK SPARQL endpoint with a SELECT query.
 ASK queries should also work but better use {@link ask} instead as it is more convenient.
@@ -15,10 +20,10 @@ ASK queries should also work but better use {@link ask} instead as it is more co
 {@param endpoint} An optional SPARQL endpoint. By default, HITO is used.
 @return {Promise<object[]>} A promise of a set of SPARQL select result bindings.
 */
-export async function select(query,graph=HITO_GRAPH, endpoint=HITO_ENDPOINT, debugMessage)
+export async function select(query,source=HITO, debugMessage)
 {
-  let url = endpoint + '?query=' + encodeURIComponent(query) + '&format=json';
-  if(graph) {url+= '&default-graph-uri=' + encodeURIComponent(graph);}
+  let url = source.endpoint + '?query=' + encodeURIComponent(query) + '&format=json';
+  if(source.graph) {url+= '&default-graph-uri=' + encodeURIComponent(source.graph);}
   try
   {
     const response = await fetch(url);
@@ -26,12 +31,14 @@ export async function select(query,graph=HITO_GRAPH, endpoint=HITO_ENDPOINT, deb
     const bindings = json.results.bindings;
 
     if(!debugMessage) {debugMessage = query.split('\n',1)[0]+"...";}
-    console.groupCollapsed(`SPARQL ${debugMessage}: ${bindings.length} results`);
-    console.log(graph,endpoint,"\n",query);
-    console.table(bindings.slice(0,5).map(b=>Object.keys(b).reduce((result,key)=>{result[key]=b[key].value;return result;},{})));
-    //console.log(url);
-    console.groupEnd();
-
+    if(LOG)
+    {
+      {console.groupCollapsed(`SPARQL ${debugMessage}: ${bindings.length} results`);}
+      console.log(source.graph,source.endpoint,"\n",query);
+      console.table(bindings.slice(0,5).map(b=>Object.keys(b).reduce((result,key)=>{result[key]=b[key].value;return result;},{})));
+      //console.log(url);
+      console.groupEnd();
+    }
     return bindings;
   }
   catch(err)

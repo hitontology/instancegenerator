@@ -1,15 +1,15 @@
 /** @module
-An instance of an OWL class.*/
+An RDF resource.*/
 import * as rdf from "./rdf.js";
 
-/** returns string and language tag of a label*/
-function labelParts(l) {return l.split("@");}
-
-export default class Instance
+export default class Resource
 {
-  /** Human readable representation */
+  /** Singular human readable representation chosen among multiple candidates.*/
   label()
   {
+    /** returns string and language tag of a label*/
+    const labelParts = (l)=> l.split("@");
+
     let label;
     const candidates = [...this.labels,...this.altLabels];
 
@@ -27,11 +27,11 @@ export default class Instance
     return this.suffix;
   }
 
-  /** */
+  /** Labels, altLabels and comments are arrays of strings that can be empty. */
   constructor(uri,labels,altLabels,comments)
   {
     this.uri = uri;
-    this.suffix = rdf.suffix(uri);
+    this.suffix = rdf.niceSuffix(uri);
     this.labels = labels;
     this.altLabels = altLabels;
     this.comments = comments;

@@ -2,7 +2,7 @@ import getClass from '../js/clazz.js';
 import chai from 'chai';
 const assert = chai.assert;
 import 'isomorphic-fetch';
-import benchmark from "./instanceIndexBenchmark.js";
+import benchmark from "./resourceIndexBenchmark.js";
 
 import Fuse from 'fuse.js';
 global.Fuse = Fuse;

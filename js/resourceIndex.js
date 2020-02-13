@@ -22,16 +22,16 @@ const options =
 };
 
 /** Fulltext index of all instances of a class. */
-export default class InstanceIndex
+export default class ResourceIndex
 {
   /** Fills the index with the instances .*/
-  constructor(instances)
+  constructor(resources)
   {
     const items = [];
-    for(const i of instances)
+    for(const r of resources)
     {
-      const labels = [...new Set([...i.labels,i.suffix])]; // remove duplicates
-      const item = {uri: i.uri, l: labels, al: i.alternativeLabel, cmt: i.comments};
+      const labels = [...new Set([...r.labels,r.suffix])]; // remove duplicates
+      const item = {uri: r.uri, l: labels, al: r.alternativeLabel, cmt: r.comments};
       items.push(item);
     }
     this.index = new Fuse(items,options);
