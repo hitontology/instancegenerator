@@ -9,6 +9,7 @@ const prefixes =
   ["rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#"],
   ["hito","http://hitontology.eu/ontology/"],
   ["dbr","http://dbpedia.org/resource/"],
+  ["yago","http://dbpedia.org/class/yago/"],
 ];
 
 /**@return {String} the prefix part of a URI if it is defined in this file.*/
