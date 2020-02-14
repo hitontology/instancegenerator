@@ -20,7 +20,7 @@ export default class Select
     select.id = property.uri;
     select.setAttribute("multiple","");
     const labelOption = document.createElement("option"); // not actually clickable, used by semantic ui as placeholder when no items are selected
-    labelOption.innerText = property.range.label;
+    labelOption.innerText = property.range.label();
     labelOption.value="";
     select.appendChild(labelOption);
     const options = [];
