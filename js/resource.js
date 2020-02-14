@@ -13,9 +13,9 @@ export default class Resource
     let label;
     const candidates = [...this.labels,...this.altLabels];
 
-    for(const c of candidates)
+    for(const lang of ["en","de",""])
     {
-      for(const lang of ["en","de",""])
+      for(const c of candidates)
       {
         if(labelParts(c)[1]===lang)
         {
