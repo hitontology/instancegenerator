@@ -1,10 +1,16 @@
 /** @module
 Form to create a new instance of the given OWL Class. */
 import * as rdf from "../rdf.js";
-import {Property,DPROP} from "../property.js";
+import {Property,DPROP,OPROP} from "../property.js";
 import Select from "./select.js";
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
+
+const catalogueClasses = [ // handled by catalogues
+  "hito:ApplicationSystemCatalogue","hito:ApplicationSystemClassified","hito:ApplicationSystemCitation",
+  "hito:FeatureCatalogue","hito:FeatureClassified","hito:FeatureCitation",
+  "hito:EnterpriseFunctionCatalogue","hito:EnterpriseFunctionClassified","hito:EnterpriseFunctionCitation"]
+  .map(x=>rdf.long(x));
 
 export default class Form
 {
@@ -39,6 +45,8 @@ export default class Form
 
     for(const p of this.properties)
     {
+      console.log(p);
+      if(p.type===OPROP&&catalogueClasses.includes(p.range.uri)) {continue;}
       const item =  document.createElement("div");
       item.classList.add("form-item","field");
       itemContainer.appendChild(item);
