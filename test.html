@@ -16,13 +16,14 @@
 <script type="module" src="./js/browser/catalogueSelect.js"></script>
 <script type="module">
 import CatalogueSelect from './js/browser/catalogueSelect.js';
-import {featureCatalogue} from './js/catalogue.js';
+import {featureCatalogue,getCatalogues} from './js/catalogue.js';
 
 async function init()
 {
   $('.ui.dropdown').dropdown();
 
-  new CatalogueSelect(document.body,await featureCatalogue());
+  //new CatalogueSelect(document.body,await featureCatalogue());
+  new CatalogueSelect(document.body,await getCatalogues());
 }
  window.init = init;
 

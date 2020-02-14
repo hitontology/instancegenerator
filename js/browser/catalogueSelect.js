@@ -4,21 +4,29 @@
 export default class CatalogueSelect
 {
   /** Create a container where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations.*/
-  constructor(parent,catalogue)
+  constructor(parent,catalogues)
   {
     const container = document.createElement("div");
     parent.appendChild(container);
-
+    // clone template from index.html
     const uiSearch = document.getElementById("categorySearch").content.cloneNode(true);
     uiSearch.id = window.crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
     container.appendChild(uiSearch);
 
     const categoryContent = [
-      { category: 'South America', title: 'Brazil' },
-      { category: 'Asia', title: 'China' },
+      //      { category: 'South America', title: 'Brazil' },
+      //{ category: 'Asia', title: 'China' },
     ];
 
-    console.log(catalogue);
+    console.log(catalogues);
+    for(const cat of catalogues)
+    {
+      for(const i of cat.instances)
+      {
+        categoryContent.push({category: cat.label(), title: i.label()});
+      }
+    }
+    /*
     for(const cat of catalogue.catalogueClass.instances)
     {
       for(const cl of catalogue.classifiedClass.instances)
@@ -27,7 +35,7 @@ export default class CatalogueSelect
       }
     }
     console.log(categoryContent);
-
+*/
     //uiSearch.search(...) does not work
     {
       $('.ui.search')
