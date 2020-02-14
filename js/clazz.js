@@ -65,8 +65,9 @@ let owlClassInstances = null;
 
 const customClassData = [["yago:ProgrammingLanguage106898352","Programming Language"],
   ["yago:License106549661","License"],
-  ["yago:OperatingSystem106568134","Operating System"]];
-const customClassInstances = customClassData.map(([uri,label]) => new Resource(rdf.long(uri),[label],[],[]));
+  ["yago:OperatingSystem106568134","Operating System"],
+  ["rdfs:Resource","URL"]];
+const customClassInstances = customClassData.map(([uri,label]) => new Resource(rdf.long(uri),[label+"@en"],[],[]));
 
 
 /** Query the class that has the given URI with all its instances.*/
