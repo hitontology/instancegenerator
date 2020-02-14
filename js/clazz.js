@@ -6,6 +6,11 @@ import * as rdf from "./rdf.js";
 
 const classes = new Map();
 
+const instanceRestrictions =
+new Map([
+  ["http://dbpedia.org/ontology/Language","?uri <http://dbpedia.org/ontology/iso6391Code> []."],
+]);
+
 class Clazz extends Resource
 {
   /** Treats the resource as a class*/
@@ -26,7 +31,9 @@ class Clazz extends Resource
     if(this.uri.includes("dbpedia.org/")) {sources = [sparql.DBPEDIA];}
     else if(this.uri.includes("hitontology.eu/"))  {sources = [sparql.HITO];}
     else {sources = [sparql.HITO,sparql.DBPEDIA];}
-    const pattern= `?uri a <${this.uri}>.`;
+    let pattern= `?uri a <${this.uri}>.`;
+    const restriction = instanceRestrictions.get(this.uri);
+    if(restriction) {pattern+="\n"+restriction;}
     //if(this.uri===rdf.long("owl:Class")) {pattern = "{?uri a owl:Class} UNION {?uri owl:equivalentClass ?x}";} // DBpedia yago workaround
     const query  = `SELECT ?uri
     GROUP_CONCAT(DISTINCT(CONCAT(?l,"@",lang(?l)));SEPARATOR="|") AS ?l
@@ -68,7 +75,6 @@ const customClassData = [["yago:ProgrammingLanguage106898352","Programming Langu
   ["yago:OperatingSystem106568134","Operating System"],
   ["rdfs:Resource","URL"]];
 const customClassInstances = customClassData.map(([uri,label]) => new Resource(rdf.long(uri),[label+"@en"],[],[]));
-
 
 /** Query the class that has the given URI with all its instances.*/
 async function queryClass(uri)
