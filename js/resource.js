@@ -88,43 +88,49 @@ export class Resource
 }
 
 /** Query the resource that has the given URI with all its members.
-@param relation optional type relation*/
-async function queryResource(uri,memberRelation)
-{
-  if(!owlClassInstances)
-  {
+    @param relation optional type relation*/
+/*
+    async function queryResource(uri)
+    {
+
+    if(!owlClassInstances)
+    {
     // initial fetching of all classes
     const c = new Clazz(new Resource(rdf.long("owl:Class"),[],[],[]),relation);
     owlClassInstances = c.loadInstances().then(()=>
     {
-      const m = new Map();
-      [...c.instances,...customClassInstances].forEach(i=>{m.set(i.uri,i);});
-      return m;
-    },
-    );
-  }
-  const instance = (await owlClassInstances).get(uri);
-  if(!instance)
-  {
-    console.error("Class does not exist: "+uri);
-  }
-  const resource = new Resource(instance,member);
-  await resource.loadMembers();
-  return resource;
+    const m = new Map();
+    [...c.instances,...customClassInstances].forEach(i=>{m.set(i.uri,i);});
+    return m;
+  },
+);
 }
+*/
+/*const instance = (await owlClassInstances).get(uri);
+if(!instance)
+{
+console.error("Class does not exist: "+uri);
+}
+const resource = new Resource(instance);
+await resource.loadMembers();
+return resource;
+}
+*/
 
 /** Get the resource that has the given URI with all its members. Only one resource is generated for any one URI.
-  Asynchronous multiton pattern, see https://stackoverflow.com/questions/60152736/asynchronous-multiton-pattern-in-javascript.
-  */
+Asynchronous multiton pattern, see https://stackoverflow.com/questions/60152736/asynchronous-multiton-pattern-in-javascript.
+*/
+/*
 export default async function getResource(uri,memberRelation)
 {
-  let clazz = classes.get(uri);
-  if(!clazz)
-  {
-    // already called with the same URI, not necessarily finished but we never want to run it twice
-    // return value is a promise but because the method is async it should be used with await and then it will get unpacked
-    clazz = queryClass(uri,relation);
-    classes.set(uri,clazz);
-  }
-  return clazz;
+let clazz = classes.get(uri);
+if(!clazz)
+{
+// already called with the same URI, not necessarily finished but we never want to run it twice
+// return value is a promise but because the method is async it should be used with await and then it will get unpacked
+clazz = queryClass(uri,relation);
+classes.set(uri,clazz);
 }
+return clazz;
+}
+*/

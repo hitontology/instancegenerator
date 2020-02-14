@@ -1,21 +1,19 @@
 /** An OWL class. */
-import Resource from "./resource.js";
+import {Resource} from "./resource.js";
 //import ResourceIndex from "./resourceIndex.js";
 import * as sparql from "./sparql.js";
 import * as rdf from "./rdf.js";
 
 const classes = new Map();
 
-class Clazz extends Resource
+export class Clazz extends Resource
 {
   /** @param resource Treats the resource as a class
    * @param relation optional type relation. needs to be enquoted in <> not prefixed or "a".*/
   constructor(uri,labels,altLabels,comments)
   {
-    super(uri,labels,altLabels,comments);
+    super(uri,labels,altLabels,comments,"a");
   }
-
-  async loadMembers() {return super.loadMembers("a");}
 }
 
 /** @type {Promise<Class>}  */
