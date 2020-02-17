@@ -14,7 +14,6 @@ describe('search', function()
   {
     for(const entry of benchmark)
     {
-      console.log(entry);
       const c = await getClass(entry.class);
       const members = (await c.getMembers()).values();
       if(!c.index) {c.index = new ResourceIndex(members);}
