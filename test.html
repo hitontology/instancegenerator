@@ -16,16 +16,19 @@
 <script type="module" src="./js/browser/catalogueSelect.js"></script>
 <script type="module">
 import CatalogueSelect from './js/browser/catalogueSelect.js';
-import {featureCatalogue,getCatalogues} from './js/catalogue.js';
+import {functionCatalogues,featureCatalogues,applicationSystemCatalogues} from './js/catalogue.js';
 
 async function init()
 {
   $('.ui.dropdown').dropdown();
 
-  //new CatalogueSelect(document.body,await featureCatalogue());
-  new CatalogueSelect(document.body,await getCatalogues());
+  await new CatalogueSelect(document.body,await featureCatalogues()).init();
+  await new CatalogueSelect(document.body,await functionCatalogues()).init();
+
+  /*await new CatalogueSelect(document.body,await applicationSystemCatalogues()).init();*/
+
 }
- window.init = init;
+window.init = init;
 
 </script>
 
@@ -35,34 +38,34 @@ async function init()
   <template id="categorySearch">
     <div class="ui search">
       <div class="ui icon input">
-        <input class="prompt" type="text" placeholder="Search ">
+        <input class="prompt" type="text" placeholder="Search Catalogues">
         <i class="search icon"></i>
       </div>
       <div class="results"></div>
     </div>
   </template>
-
+  <!--
   <select name="skills" multiple="" multiple class="ui dropdown fluid search" >
-    <option value="">Skills</option>
-    <option value="angular">Angular</option>
-    <option value="css">CSS</option>
-    <option value="design">Graphic Design</option>
-    <option value="ember">Ember</option>
-    <option value="html">HTML</option>
-    <option value="ia">Information Architecture</option>
-    <option value="javascript">Javascript</option>
-    <option value="mech">Mechanical Engineering</option>
-    <option value="meteor">Meteor</option>
-    <option value="node">NodeJS</option>
-    <option value="plumbing">Plumbing</option>
-    <option value="python">Python</option>
-    <option value="rails">Rails</option>
-    <option value="react">React</option>
-    <option value="repair">Kitchen Repair</option>
-    <option value="ruby">Ruby</option>
-    <option value="ui">UI Design</option>
-    <option value="ux">User Experience</option>
-  </select>
-
+  <option value="">Skills</option>
+  <option value="angular">Angular</option>
+  <option value="css">CSS</option>
+  <option value="design">Graphic Design</option>
+  <option value="ember">Ember</option>
+  <option value="html">HTML</option>
+  <option value="ia">Information Architecture</option>
+  <option value="javascript">Javascript</option>
+  <option value="mech">Mechanical Engineering</option>
+  <option value="meteor">Meteor</option>
+  <option value="node">NodeJS</option>
+  <option value="plumbing">Plumbing</option>
+  <option value="python">Python</option>
+  <option value="rails">Rails</option>
+  <option value="react">React</option>
+  <option value="repair">Kitchen Repair</option>
+  <option value="ruby">Ruby</option>
+  <option value="ui">UI Design</option>
+  <option value="ux">User Experience</option>
+</select>
+-->
 </body>
 </html>

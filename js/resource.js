@@ -14,6 +14,7 @@ new Map([
   ["owl:Class","rdf:type"],
   ["hito:FeatureCatalogue","hito:featureCatalogue"],
   ["hito:FeatureClassified","hito:featureClassified"],
+  ["hito:EnterpriseFunctionCatalogue","hito:functionCatalogue"],
   //["hito:FeatureCitation","hito:featureC"],
 ].map(([x,y])=>[rdf.long(x),rdf.long(y)]));
 
@@ -68,18 +69,20 @@ export class Resource
   }
 
   /** Queries the SPARQL endpoint for a map of URIs to resources for all members of the given resource
-   * @return {Map<string,Resource>} the members of the resource */
+  * Use the cached versions getMember() and getMembers() instead.
+  * @return {Map<string,Resource>} the members of the resource */
   async queryMembers()
   {
     let pattern= `?uri <${this.memberRelation}> <${this.uri}>.`;
     const restriction = memberRestrictions.get(this.uri);
     if(restriction) {pattern+="\n"+restriction;}
 
-    const query  = `SELECT ?uri
+    const query  = `SELECT ?uri ?type
     GROUP_CONCAT(DISTINCT(CONCAT(?l,"@",lang(?l)));SEPARATOR="|") AS ?l
     GROUP_CONCAT(DISTINCT(CONCAT(?al,"@",lang(?al)));SEPARATOR="|") AS ?al
     GROUP_CONCAT(DISTINCT(CONCAT(?cmt,"@",lang(?cmt)));SEPARATOR="|") AS ?cmt
     {
+      ?uri a ?type.
       ${pattern}
       OPTIONAL {?uri rdfs:label ?l.}
       OPTIONAL {?uri skos:altLabel ?al.}
@@ -97,18 +100,19 @@ export class Resource
     {
       {
         members.set(b.uri,
-          new Resource(b.uri,this.type,unpack(b.l),unpack(b.al),unpack(b.cmt)));
+          new Resource(b.uri,b.type,unpack(b.l),unpack(b.al),unpack(b.cmt)));
       }
     });
     //this.instanceIndex = new ResourceIndex(this.members);
     return members;
   }
 
-  /** Cached member function. */
+  /** Cached.
+      * @returns the a map of uris to members*/
   async getMembers()
   {
-    if(!this.members) {this.members=this.queryMembers();} // promise
-    return this.members;
+    if(!this.members) {this.members=this.queryMembers();} // promise, prevent conflicts
+    return (await this.members);
   }
 }
 
@@ -117,19 +121,19 @@ export class Resource
 async function queryResource(uri)
 {
   /*
-  if(!owlClassInstances)
-  {
-    // initial fetching of all classes
-    const c = (new Resource(rdf.long("owl:Class"),[],[],[]),relation);
-    owlClassInstances = c.loadInstances().then(()=>
-    {
+      if(!owlClassInstances)
+      {
+      // initial fetching of all classes
+      const c = (new Resource(rdf.long("owl:Class"),[],[],[]),relation);
+      owlClassInstances = c.loadInstances().then(()=>
+      {
       const m = new Map();
       [...c.instances,...customClassInstances].forEach(i=>{m.set(i.uri,i);});
       return m;
     },
-    );
-  }
-  */
+  );
+}
+*/
 }
 
 /*const instance = (await owlClassInstances).get(uri);
@@ -149,15 +153,15 @@ Asynchronous multiton pattern, see https://stackoverflow.com/questions/60152736/
 /*
 async function getResource(uri)
 {
-  let resource = resources.get(uri);
-  if(!resource)
-  {
-    // already called with the same URI, not necessarily finished but we never want to run it twice
-    // return value is a promise but because the method is async it should be used with await and then it will get unpacked
-    resource = queryResource(uri);
-    resources.set(uri,resource);
-  }
-  return resource;
+let resource = resources.get(uri);
+if(!resource)
+{
+// already called with the same URI, not necessarily finished but we never want to run it twice
+// return value is a promise but because the method is async it should be used with await and then it will get unpacked
+resource = queryResource(uri);
+resources.set(uri,resource);
+}
+return resource;
 }
 
 async function initCache()
