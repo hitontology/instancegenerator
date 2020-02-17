@@ -25,7 +25,7 @@
     "mocha": "7.0.0-esm1"
   },
   "mocha": {
-    "timeout": 15000
+    "timeout": 30000
   },
   "dependencies": {
     "semantic-ui-dropdown": "^2.4.1",

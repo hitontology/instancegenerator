@@ -17,14 +17,14 @@ new Map([
   //["hito:FeatureCitation","hito:featureC"],
 ].map(([x,y])=>[rdf.long(x),rdf.long(y)]));
 
-const resources = new Map();
+//const resources = new Map();
 
 /** Guess the SPARQL sources of a URI */
 function guessSources(uri)
 {
   let sources = [];
-  if(this.uri.includes("dbpedia.org/")) {sources = [sparql.DBPEDIA];}
-  else if(this.uri.includes("hitontology.eu/"))  {sources = [sparql.HITO];}
+  if(uri.includes("dbpedia.org/")) {sources = [sparql.DBPEDIA];}
+  else if(uri.includes("hitontology.eu/"))  {sources = [sparql.HITO];}
   else {sources = [sparql.HITO,sparql.DBPEDIA];}
   return sources;
 }
@@ -37,7 +37,8 @@ export class Resource
     this.uri = uri;
     this.type = type;
     this.memberRelation = memberRelations.get(type);
-    this.suffix = rdf.niceSuffix(uri);
+    this.suffix = rdf.suffix(uri);
+    this.niceSuffix = rdf.niceSuffix(uri);
     this.labels = labels;
     this.altLabels = altLabels;
     this.comments = comments;
@@ -63,13 +64,14 @@ export class Resource
         }
       }
     }
-    return this.suffix;
+    return this.niceSuffix;
   }
 
-  /** Gets an array containing all members of the given resource */
+  /** Queries the SPARQL endpoint for a map of URIs to resources for all members of the given resource
+   * @return {Map<string,Resource>} the members of the resource */
   async queryMembers()
   {
-    let pattern= `?uri ${this.memberRelation} <${this.uri}>.`;
+    let pattern= `?uri <${this.memberRelation}> <${this.uri}>.`;
     const restriction = memberRestrictions.get(this.uri);
     if(restriction) {pattern+="\n"+restriction;}
 
@@ -81,7 +83,7 @@ export class Resource
       ${pattern}
       OPTIONAL {?uri rdfs:label ?l.}
       OPTIONAL {?uri skos:altLabel ?al.}
-      OPTIONAL {?uri skos:altLabel ?cmt.}
+      OPTIONAL {?uri rdfs:comment ?cmt.}
     }`;
 
     const bindings = [];
@@ -89,13 +91,13 @@ export class Resource
     {
       bindings.push(...sparql.flat(await sparql.select(query,source,`select all members of ${this.uri} from `+source.name)));
     }
-    const members = [];
+    const members = new Map();
     const unpack = s => (s && (s!=="@") && s.split('|')) || []; // "@" occurs on 0 results
     bindings.forEach(b=>
     {
       {
-        members.push(
-          new Resource(b.uri,unpack(b.l),unpack(b.al),unpack(b.cmt)));
+        members.set(b.uri,
+          new Resource(b.uri,this.type,unpack(b.l),unpack(b.al),unpack(b.cmt)));
       }
     });
     //this.instanceIndex = new ResourceIndex(this.members);
@@ -103,7 +105,7 @@ export class Resource
   }
 
   /** Cached member function. */
-  async members()
+  async getMembers()
   {
     if(!this.members) {this.members=this.queryMembers();} // promise
     return this.members;
@@ -144,6 +146,7 @@ return resource;
 /** Get the resource that has the given URI with all its members. Only one resource is generated for any one URI.
 Asynchronous multiton pattern, see https://stackoverflow.com/questions/60152736/asynchronous-multiton-pattern-in-javascript.
 */
+/*
 async function getResource(uri)
 {
   let resource = resources.get(uri);
@@ -161,3 +164,4 @@ async function initCache()
 {
 
 }
+*/

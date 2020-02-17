@@ -64,7 +64,8 @@ export default class Form
       }
       else
       {
-        new Select(item,p);
+        const select = new Select(item,p);
+        await select.init();
       }
     }
   }

@@ -17,6 +17,7 @@ const options =
   [
     {name:"l", weight: 0.9}, // label
     {name:"al", weight: 0.6}, // alternative label
+    {name:"suffix", weight: 0.5},
     {name:"cmt", weight: 0.4}, // alternative label
   ],
 };
@@ -31,7 +32,7 @@ export default class ResourceIndex
     for(const r of resources)
     {
       const labels = [...new Set([...r.labels,r.suffix])]; // remove duplicates
-      const item = {uri: r.uri, l: labels, al: r.alternativeLabel, cmt: r.comments};
+      const item = {uri: r.uri, l: labels, al: r.alternativeLabel, suffix: r.suffix, cmt: r.comments};
       items.push(item);
     }
     this.index = new Fuse(items,options);

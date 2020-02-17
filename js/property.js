@@ -2,7 +2,7 @@
 An RDF property.*/
 import * as rdf from "./rdf.js";
 import * as sparql from "./sparql.js";
-import {Clazz} from '../js/clazz.js';
+import getClass from '../js/clazz.js';
 
 export const OPROP = rdf.long("owl:ObjectProperty");
 export const DPROP = rdf.long("owl:DatatypeProperty");
@@ -47,8 +47,8 @@ export class Property
     for(const b of bindings)
     {
       const p = new Property(b.uri,b.label,b.type);
-      p.range = new Class();
-      // await getClass(b.range);
+      //p.range = new Class();
+      p.range = await getClass(b.range);
       properties.push(p);
     }
     return properties;

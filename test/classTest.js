@@ -14,12 +14,12 @@ describe('Clazz', function()
     for(const uri of Object.keys(benchmark))
     {
       const promises = [];
-      for(let i=0;i<100;i++) // test caching
+      for(let i=0;i<1;i++) // test caching
       {
         promises.push(getClass(uri));
       }
       const c = (await Promise.all(promises))[0];
-      assert.includeMembers(c.instances.map(i=>i.uri),benchmark[uri].instances);
+      assert.includeMembers([...(await c.getMembers()).keys()],benchmark[uri].instances);
     }
   },
   );
