@@ -6,7 +6,7 @@ import * as sparql from "./sparql.js";
 const memberRestrictions =
 new Map([
   ["http://dbpedia.org/ontology/Language","?uri <http://dbpedia.org/ontology/iso6391Code> []."],
-  ["http://dbpedia.org/class/yago/License106549661","[] dbo:license ?uri."],
+  ["http://dbpedia.org/class/yago/License106549661","[] <http://dbpedia.org/ontology/license> ?uri."],
 ]);
 
 const memberRelations =
