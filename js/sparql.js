@@ -6,9 +6,10 @@ const HITO_GRAPH = "http://hitontology.eu/ontology";
 const HITO_ENDPOINT = "https://hitontology.eu/sparql";
 
 const DBPEDIA_GRAPH = "http://dbpedia.org";
-//const DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql";
+const DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql";
 
-export const DBPEDIA = {graph: DBPEDIA_GRAPH,endpoint: HITO_ENDPOINT, name: "DBpedia"}; // DBpedia is down or slow sometimes, uploaded the relevant triples to HITO
+// DBpedia is down or slow sometimes, a mirror could help
+export const DBPEDIA = {graph: DBPEDIA_GRAPH,endpoint: DBPEDIA_ENDPOINT, name: "DBpedia"};
 export const HITO = {graph: HITO_GRAPH,endpoint: HITO_ENDPOINT, name: "HITO"};
 
 const LOG = false;
