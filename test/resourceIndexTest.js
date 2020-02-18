@@ -8,11 +8,11 @@ import benchmark from "./resourceIndexBenchmark.js";
 import Fuse from 'fuse.js';
 global.Fuse = Fuse;
 
-describe('search', function()
+describe('search',async function()
 {
-  it('index#search()', async () =>
+  for(const entry of benchmark)
   {
-    for(const entry of benchmark)
+    it(entry.class, async () =>
     {
       const c = await getClass(entry.class);
       const members = (await c.getMembers()).values();
@@ -23,6 +23,6 @@ describe('search', function()
         const result = c.index.search(query);
         assert.include(result,entry.instance,query+" "+JSON.stringify(result));
       }
-    }
-  });
+    });
+  }
 });
