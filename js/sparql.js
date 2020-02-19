@@ -14,6 +14,17 @@ export const HITO = {graph: HITO_GRAPH,endpoint: HITO_ENDPOINT, name: "HITO"};
 
 const LOG = false;
 
+class SparqlError extends Error
+{
+  /** Wrapper for Sparql related errors */
+  constructor(query, url, cause)
+  {
+    super(`Error executing SPARQL query:\n${query}\nURL, ${url}\nCaused by `+cause.message);
+    console.error(this);
+    this.cause = cause;
+    this.name = "SparqlError";
+  }
+}
 /** Query public SNIK SPARQL endpoint with a SELECT query.
 ASK queries should also work but better use {@link ask} instead as it is more convenient.
 {@param query} A valid SPARQL query.
@@ -44,9 +55,10 @@ export async function select(query,source=HITO, debugMessage)
   }
   catch(err)
   {
-    console.error(err);
-    console.error(`Error executing SPARQL query:\n${query}\nURL: ${url}\n\n`);
-    return [];
+    //console.error(err);
+    //console.error(`Error executing SPARQL query:\n${query}\nURL: ${url}\n\n`);
+    //return [];
+    throw new SparqlError(query,url,err);
   }
 }
 

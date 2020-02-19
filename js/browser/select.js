@@ -52,20 +52,29 @@ export default class Select
   async init()
   {
     const options = [];
-    const members = (await this.property.range.getMembers()).values();
-    for(const i of members)
+    try
     {
-      const option = document.createElement("option");
-      option.instance = i;
-      options.push(option);
-      option.value = i.uri;
-      option.innerText = i.label();
+      const members = (await this.property.range.getMembers()).values();
+      for(const i of members)
+      {
+        const option = document.createElement("option");
+        option.instance = i;
+        options.push(option);
+        option.value = i.uri;
+        option.innerText = i.label();
+      }
+      options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
+      this.select.append(...options);
+      this.property.selected = () => [...this.options].filter(o => o.selected).map(o => o.value);
+      if(SEARCH) {this.addSearch(options);}
     }
-    options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
-    this.select.append(...options);
-    this.property.selected = () => [...this.options].filter(o => o.selected).map(o => o.value);
-    if(SEARCH) {this.addSearch(options);}
-    this.select.classList.remove("loading");
-    this.select.parentElement.classList.remove("loading"); // Semantic UI may have already created a parent div with the loading class
+    catch (e)
+    {
+      this.select.parentElement.classList.add("error","disabled");
+    }
+    finally
+    {
+      this.select.parentElement.classList.remove("loading"); // Semantic UI may have already created a parent div with the loading class
+    }
   }
 }
