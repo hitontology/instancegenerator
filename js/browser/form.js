@@ -26,48 +26,53 @@ export default class Form
     h1.innerText = "Add "+rdf.short(clazz);
     this.form = document.createElement("form");
     //this.form.id=id;
-    const submitButton = document.createElement("input");
-    submitButton.type="submit";
-    submitButton.value="Create";
-    this.container.append(h1,submitButton,this.form);
+    this.container.append(h1,this.form);
     this.submit=this.submit.bind(this);
-    submitButton.addEventListener("click",this.submit);
   }
 
   /** load the data from the SPARQL endpoint and populate */
   async init()
   {
-    const itemContainer = document.createElement("div");
-    itemContainer.classList.add("form-item-container","ui","form");
-    this.form.appendChild(itemContainer);
+    const form = document.createElement("div");
+    form.classList.add("ui","form");
+    this.form.appendChild(form);
 
     this.properties = await Property.domainProperties(this.clazz);
 
     for(const p of this.properties)
     {
-      console.log(p);
       if(p.type===OPROP&&catalogueClasses.includes(p.range.uri)) {continue;}
-      const item =  document.createElement("div");
-      item.classList.add("form-item","field");
-      itemContainer.appendChild(item);
+
+      const field = document.createElement("div");
+      field.classList.add("field");
+      form.appendChild(field);
       const label = document.createElement("label");
       label.for= p.uri;
       label.innerText = p.label;
-      item.appendChild(label);
+      field.appendChild(label);
+
       if(p.type===DPROP)
       {
+        /*
         const text = document.createElement("input");
         item.appendChild(text);
         text.setAttribute("type",text);
         text.classList.add("textline");
         p.text = () => text.value;
+        */
       }
       else
       {
-        const select = new Select(item,p);
-        await select.init();
+        const select = new Select(field,p);
+        /*await*/ select.init();
       }
     }
+    const submitButton = document.createElement("input");
+    submitButton.classList.add("ui","submit","button");
+    submitButton.type="submit";
+    submitButton.value="Create";
+    this.form.appendChild(submitButton);
+    submitButton.addEventListener("click",this.submit);
   }
 
   /** Remove the form from the DOM. */
