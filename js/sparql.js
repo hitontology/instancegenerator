@@ -27,7 +27,7 @@ export async function select(query,source=HITO, debugMessage)
   if(source.graph) {url+= '&default-graph-uri=' + encodeURIComponent(source.graph);}
   try
   {
-    const response = await fetch(url);
+    const response = await fetch(url, {cache: "force-cache"});
     const json = await response.json();
     const bindings = json.results.bindings;
 
