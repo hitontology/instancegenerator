@@ -19,8 +19,10 @@ class SparqlError extends Error
   /** Wrapper for Sparql related errors */
   constructor(query, url, cause)
   {
-    super(`Error executing SPARQL query:\n${query}\nURL, ${url}\nCaused by `+cause.message);
+    super(cause.message+`\n${query}\nURL, ${url}`);
+    console.groupCollapsed("Error executing SPARQL query");
     console.error(this);
+    console.groupEnd();
     this.cause = cause;
     this.name = "SparqlError";
   }
