@@ -53,13 +53,11 @@ export default class Form
 
       if(p.type===DPROP)
       {
-        /*
         const text = document.createElement("input");
-        item.appendChild(text);
+        field.appendChild(text);
         text.setAttribute("type",text);
         text.classList.add("textline");
         p.text = () => text.value;
-        */
       }
       else
       {
@@ -90,7 +88,7 @@ export default class Form
     {
       if(!p.selected)
       {
-        if(!p.text()) {continue;}
+        if(!p.text) {continue;}
         text+=product + ` <${p.uri}> "${p.text()}".\n`;
         continue;
       }

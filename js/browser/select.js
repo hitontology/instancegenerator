@@ -65,7 +65,7 @@ export default class Select
       }
       options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
       this.select.append(...options);
-      this.property.selected = () => [...this.options].filter(o => o.selected).map(o => o.value);
+      this.property.selected = () => [...options].filter(o => o.selected).map(o => o.value);
       if(SEARCH) {this.addSearch(options);}
     }
     catch (e)
