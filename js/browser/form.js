@@ -3,6 +3,8 @@ Form to create a new instance of the given OWL Class. */
 import * as rdf from "../rdf.js";
 import {Property,DPROP,OPROP} from "../property.js";
 import Select from "./select.js";
+import CatalogueSelect from "./catalogueSelect.js";
+import {functionCatalogues,featureCatalogues,applicationSystemCatalogues} from '../catalogue.js';
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
 
@@ -65,6 +67,9 @@ export default class Form
         /*await*/ select.init();
       }
     }
+    await new CatalogueSelect(form,await featureCatalogues()).init();
+    //await new CatalogueSelect(form,await functionCatalogues()).init();
+
     const submitButton = document.createElement("input");
     submitButton.classList.add("ui","submit","button");
     submitButton.type="submit";

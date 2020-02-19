@@ -74,6 +74,7 @@ export default class Select
     }
     finally
     {
+      this.select.classList.remove("loading");
       this.select.parentElement.classList.remove("loading"); // Semantic UI may have already created a parent div with the loading class
     }
   }
