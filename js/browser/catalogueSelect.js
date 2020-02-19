@@ -1,4 +1,5 @@
 /** @module */
+import * as rdf from "../rdf.js";
 
 /** An UI element where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations. */
 export default class CatalogueSelect
@@ -14,37 +15,38 @@ export default class CatalogueSelect
     const templateContent = document.getElementById("categorySearch").content.children[0];
     this.uiSearch = templateContent.cloneNode(true);
     this.uiSearch.id = window.crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
-    container.appendChild(this.uiSearch);
+
+    this.uiSearch.querySelector(".prompt").placeholder="Search "+rdf.niceSuffix(catalogues[0].type);
+
+    /*const citation = document.createElement("input");
+    input.classList.add("");
+    citation.type="text";*/
+
+    container.append(this.uiSearch);
 
     //console.log(catalogues);
+  }
+
+  /** Event handler for selecting a catalogue entry. */
+  selectEntry(result,response)
+  {
+    console.log(result);
+    return true; // prevent default action, see https://semantic-ui.com/modules/search.html#/settings
   }
 
   /** Populates the catalogue interface. */
   async init()
   {
-    const categoryContent = [
-      //      { category: 'South America', title: 'Brazil' },
-      //{ category: 'Asia', title: 'China' },
-    ];
+    const categoryContent = [];
 
     for(const cat of this.catalogues)
     {
       for(const i of (await cat.getMembers()).values())
       {
         //console.log({category: cat.label(), title: i.label()});
-        categoryContent.push({category: cat.label(), title: i.label()});
+        categoryContent.push({category: cat.label(), title: i.label(), id: i.uri});
       }
     }
-    /*
-    for(const cat of catalogue.catalogueClass.instances)
-    {
-    for(const cl of catalogue.classifiedClass.instances)
-    {
-    categoryContent.push({category: cat.label(), title: cl.label()});
-  }
-}
-console.log(categoryContent);
-*/
     //uiSearch.search(...) does not work
     {
       $('#'+this.uiSearch.id)
@@ -52,12 +54,11 @@ console.log(categoryContent);
           type: 'category',
           source: categoryContent,
           fullTextSearch: true,
-          maxResults: 20,
-          //searchFields: ...
+          maxResults: 30,
+          searchFields: ["category", "title"],
           minCharacters: 0,
+          onSelect: this.selectEntry,
         });
     }
-
-    // = new Select(container,catalogue.classifiedClass);
   }
 }

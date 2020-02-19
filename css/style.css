@@ -2,6 +2,8 @@ select.large {width:40em; height: 20em;}
 
 input.textline, input.search {width:40em; height: 1em;}
 
+input {min-width: 45em;}
+
 label {min-width: 20em; display:block;}
 
 body {margin-left: 0.5em;}

@@ -41,6 +41,9 @@ export default class Form
 
     this.properties = await Property.domainProperties(this.clazz);
 
+    await new CatalogueSelect(form,await featureCatalogues()).init();
+    await new CatalogueSelect(form,await functionCatalogues()).init();
+
     for(const p of this.properties)
     {
       if(p.type===OPROP&&catalogueClasses.includes(p.range.uri)) {continue;}
@@ -67,8 +70,6 @@ export default class Form
         /*await*/ select.init();
       }
     }
-    await new CatalogueSelect(form,await featureCatalogues()).init();
-    //await new CatalogueSelect(form,await functionCatalogues()).init();
 
     const submitButton = document.createElement("input");
     submitButton.classList.add("ui","submit","button");
