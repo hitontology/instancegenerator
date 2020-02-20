@@ -2,15 +2,15 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <!--
   <script src="node_modules/semantic-ui-dropdown/dropdown.js"></script>
   <link rel="stylesheet" href="node_modules/semantic-ui-dropdown/dropdown.css">
   <script src="node_modules/semantic-ui-transition/transition.js"></script>
   <link rel="stylesheet" href="node_modules/semantic-ui-transition/transition.css">
 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
 <link rel="stylesheet" href="css/style.css">
 
 <script type="module" src="./js/browser/catalogueSelect.js"></script>
@@ -27,45 +27,83 @@ async function init()
 
   /*await new CatalogueSelect(document.body,await applicationSystemCatalogues()).init();*/
 
+  $('#cite-form')
+      .form(
+      {fields: {name: 'minLength[3]',}
+    });
+
+    $('.ui.modal').modal({
+          onApprove : function() {
+            //Submits the semantic ui form
+            //And pass the handling responsibilities to the form handlers,
+            // e.g. on form validation success
+            $('.ui.form').submit();
+            //Return false as to not close modal dialog
+            return false;
+          }
+      });
+
+  $('.ui.modal').modal('show');
+
 }
 window.init = init;
+
 
 </script>
 
 </head>
 <body onLoad="init()">
 
+  <form class="ui form modal" id="cite-form">
+    <i class="close icon"></i>
+    <div class="header" id="cite-header">
+      Cite MyClassifiedFeature of catalogue MyCatalogue
+    </div>
+    <div class="field">
+      <input type="text" name="name" placeholder="Feature Citation Name"></input>
+    </div>
+    <div class="actions">
+      <button class="ui positive right labeled icon button ok" type="submit">
+        OK
+        <i class="checkmark icon"></i>
+      </button>
+      <button class="ui black deny button">Cancel</button>
+    </div>
+  </form>
+
   <template id="categorySearch">
     <div class="ui search">
       <div class="ui icon input">
-        <input class="prompt" type="text" placeholder="Search Catalogues">
+        <input class="prompt" type="text" placeholder="Search Catalogues" class="ui loading">
         <i class="search icon"></i>
       </div>
       <div class="results"></div>
     </div>
   </template>
-  <!--
-  <select name="skills" multiple="" multiple class="ui dropdown fluid search" >
-  <option value="">Skills</option>
-  <option value="angular">Angular</option>
-  <option value="css">CSS</option>
-  <option value="design">Graphic Design</option>
-  <option value="ember">Ember</option>
-  <option value="html">HTML</option>
-  <option value="ia">Information Architecture</option>
-  <option value="javascript">Javascript</option>
-  <option value="mech">Mechanical Engineering</option>
-  <option value="meteor">Meteor</option>
-  <option value="node">NodeJS</option>
-  <option value="plumbing">Plumbing</option>
-  <option value="python">Python</option>
-  <option value="rails">Rails</option>
-  <option value="react">React</option>
-  <option value="repair">Kitchen Repair</option>
-  <option value="ruby">Ruby</option>
-  <option value="ui">UI Design</option>
-  <option value="ux">User Experience</option>
-</select>
--->
+  <div >
+
+    <select name="skills" multiple="" multiple class="ui dropdown fluid search loading" >
+      <option value="">Skills</option>
+      <option value="angular">Angular</option>
+      <option value="css">CSS</option>
+      <option value="design">Graphic Design</option>
+      <option value="ember">Ember</option>
+      <option value="html">HTML</option>
+      <option value="ia">Information Architecture</option>
+      <option value="javascript">Javascript</option>
+      <option value="mech">Mechanical Engineering</option>
+      <option value="meteor">Meteor</option>
+      <option value="node">NodeJS</option>
+      <option value="plumbing">Plumbing</option>
+      <option value="python">Python</option>
+      <option value="rails">Rails</option>
+      <option value="react">React</option>
+      <option value="repair">Kitchen Repair</option>
+      <option value="ruby">Ruby</option>
+      <option value="ui">UI Design</option>
+      <option value="ux">User Experience</option>
+    </select>
+  </div>
+
 </body>
 </html>
