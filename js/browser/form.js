@@ -41,8 +41,10 @@ export default class Form
 
     this.properties = await Property.domainProperties(this.clazz);
 
-    await new CatalogueSelect(form,await featureCatalogues()).init();
-    await new CatalogueSelect(form,await functionCatalogues()).init();
+    this.catalogueSelects = [
+      await new CatalogueSelect(form,await featureCatalogues()).init(),
+      await new CatalogueSelect(form,await functionCatalogues()).init(),
+    ];
 
     for(const p of this.properties)
     {
@@ -95,13 +97,18 @@ export default class Form
       if(!p.selected)
       {
         if(!p.text) {continue;}
-        text+=product + ` <${p.uri}> "${p.text()}".\n`;
+        text+=product + ` <${p.uri}> "${p.text()}"@en.\n`;
         continue;
       }
       for(const s of p.selected())
       {
         text+=product + ` <${p.uri}> <${s}>.\n`;
       }
+    }
+    for(const c of this.catalogueSelects)
+    {
+      console.log(c,c.text());
+      text+=c.text()+"\n";
     }
     alert(text);
   }

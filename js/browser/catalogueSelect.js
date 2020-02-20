@@ -1,14 +1,23 @@
 /** @module */
 import * as rdf from "../rdf.js";
 
+const catalogueTypes =
+{
+  "http://hitontology.eu/ontology/FeatureCatalogue": {citationType: "http://hitontology.eu/ontology/FeatureCitation", citationRelation: "http://hitontology.eu/ontology/featureClassified"},
+  "http://hitontology.eu/ontology/EnterpriseFunctionCatalogue": {citationType: "http://hitontology.eu/ontology/EnterpriseFunctionCitation", citationRelation: "http://hitontology.eu/ontology/functionClassified"},
+};
+
 /** An UI element where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations. */
 export default class CatalogueSelect
 {
-  /** Create a container where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations.*/
+  /** Create a container where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations.
+   * All catalogues need to be of the same rdf:type, such as all feature catalogues or all enterprise function catalogues. */
   constructor(parent,catalogues)
   {
     this.catalogues = catalogues;
-    this.name = rdf.niceSuffix(catalogues[0].type);
+    this.type = catalogues[0].type;
+    this.types = catalogueTypes[this.type];
+    this.name = rdf.niceSuffix(this.type);
     /** @type {Map<string,string>} */
     this.entryCitations = new Map();
 
@@ -26,6 +35,32 @@ export default class CatalogueSelect
     this.selectEntry = this.selectEntry.bind(this);
   }
 
+  /** Remove special characters and convert to camel case */
+  camelize(str)
+  {
+    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index)
+    {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    }).replace(/\s+/g, '');
+  }
+
+  /** RDF triples in turtle text form.*/
+  text()
+  {
+    console.log(this.entryCitations);
+    console.log(this.entryCitations.entries());
+    let text = "";
+    for(const [uri,name] of this.entryCitations.entries())
+    {
+      console.log(uri,name);
+      const citationUri = "http://hitontology.eu/ontology/"+this.camelize(name);
+      text+=`<${citationUri}> a <${this.types.citationType}>.\n`;
+      text+=`<${citationUri}> <${this.types.citationRelation}> <${uri}>.\n`;
+      text+=`<${citationUri}> rdfs:label "${name}"@en.\n`;
+    }
+    return text;
+  }
+
   /** User wants to created a new citation */
   enterCitation(e)
   {
@@ -40,7 +75,8 @@ export default class CatalogueSelect
       this.citation.value = "Please enter at least 3 characters.";
       return;
     }
-    {this.entryCitations.set(this.selected,value) ;}
+    console.log(`New value for ${this.selected}: ${value}`);
+    this.entryCitations.set(this.selected,value);
   }
 
   /** Event handler for selecting a catalogue entry. */
@@ -48,7 +84,7 @@ export default class CatalogueSelect
   {
     const uri = result.id;
     this.selected = uri;
-    console.log(result);
+    //console.log(result);
     //console.log(`Selected ${this.name} entry`,uri);
     this.citation.placeholder = "Enter Citation for "+result.title;
     const oldValue = this.entryCitations.get(uri);
@@ -82,5 +118,6 @@ export default class CatalogueSelect
           onSelect: this.selectEntry,
         });
     }
+    return this;
   }
 }
