@@ -44,6 +44,7 @@ export default class Form
     this.catalogueSelects = [
       await new CatalogueSelect(form,await featureCatalogues()).init(),
       await new CatalogueSelect(form,await functionCatalogues()).init(),
+      await new CatalogueSelect(form,await applicationSystemCatalogues()).init(),
     ];
 
     for(const p of this.properties)

@@ -5,6 +5,7 @@ const catalogueTypes =
 {
   "http://hitontology.eu/ontology/FeatureCatalogue": {citationType: "http://hitontology.eu/ontology/FeatureCitation", citationRelation: "http://hitontology.eu/ontology/featureClassified"},
   "http://hitontology.eu/ontology/EnterpriseFunctionCatalogue": {citationType: "http://hitontology.eu/ontology/EnterpriseFunctionCitation", citationRelation: "http://hitontology.eu/ontology/functionClassified"},
+  "http://hitontology.eu/ontology/ApplicationSystemCatalogue": {citationType: "http://hitontology.eu/ontology/ApplicationSystemCitation", citationRelation: "http://hitontology.eu/ontology/applicationSystemClassified"},
 };
 
 /** An UI element where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations. */
