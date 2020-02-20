@@ -27,26 +27,26 @@ async function init()
 
   /*await new CatalogueSelect(document.body,await applicationSystemCatalogues()).init();*/
 
-  $('#cite-form')
-      .form(
-      {fields: {name: 'minLength[3]',}
+  const citeModal = $('#cite-modal');
+  citeModal.form({fields: {name: 'minLength[3]',}}); // validate
+
+  citeModal.modal(
+    {
+      onApprove : function() {
+        event.preventDefault();
+        const name = document.getElementById("cite-name").value;
+        console.log(name);
+        $('.ui.form').submit();
+
+        //Return false as to not close modal dialog
+        return false;
+      }
     });
 
-    $('.ui.modal').modal({
-          onApprove : function() {
-            //Submits the semantic ui form
-            //And pass the handling responsibilities to the form handlers,
-            // e.g. on form validation success
-            $('.ui.form').submit();
-            //Return false as to not close modal dialog
-            return false;
-          }
-      });
+    $('.ui.modal').modal('show');
 
-  $('.ui.modal').modal('show');
-
-}
-window.init = init;
+  }
+  window.init = init;
 
 
 </script>
@@ -54,21 +54,22 @@ window.init = init;
 </head>
 <body onLoad="init()">
 
-  <form class="ui form modal" id="cite-form">
+  <form class="ui form modal" id="cite-modal" onsubmit="return false;"> <!-- disable page reload after submit -->
     <i class="close icon"></i>
     <div class="header" id="cite-header">
       Cite MyClassifiedFeature of catalogue MyCatalogue
     </div>
     <div class="field">
-      <input type="text" name="name" placeholder="Feature Citation Name"></input>
+      <input type="text" name="name" id="cite-name" placeholder="Feature Citation Name"></input>
     </div>
     <div class="actions">
       <button class="ui positive right labeled icon button ok" type="submit">
         OK
         <i class="checkmark icon"></i>
       </button>
-      <button class="ui black deny button">Cancel</button>
+      <button class="ui black deny button" type="button">Cancel</button>
     </div>
+    <div class="ui error message"></div>
   </form>
 
   <template id="categorySearch">

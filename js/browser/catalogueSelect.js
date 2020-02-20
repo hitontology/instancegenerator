@@ -9,29 +9,20 @@ export default class CatalogueSelect
   {
     this.catalogues = catalogues;
 
-    const container = document.createElement("div");
-    parent.appendChild(container);
     // clone template from index.html
-    const templateContent = document.getElementById("categorySearch").content.children[0];
-    this.uiSearch = templateContent.cloneNode(true);
+    const container = document.getElementById("js-category-template").content.cloneNode(true).children[0];
+    parent.appendChild(container);
+    this.uiSearch = container.querySelector(".js-category-search");
     this.uiSearch.id = window.crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
 
-    this.uiSearch.querySelector(".prompt").placeholder="Search "+rdf.niceSuffix(catalogues[0].type);
-
-    /*const citation = document.createElement("input");
-    input.classList.add("");
-    citation.type="text";*/
-
-    container.append(this.uiSearch);
-
-    //console.log(catalogues);
+    this.uiSearch.querySelector(".prompt").placeholder="Select from "+rdf.niceSuffix(catalogues[0].type);
   }
 
   /** Event handler for selecting a catalogue entry. */
   selectEntry(result,response)
   {
     console.log(result);
-    return true; // prevent default action, see https://semantic-ui.com/modules/search.html#/settings
+    return false; // prevent default action, see https://semantic-ui.com/modules/search.html#/settings
   }
 
   /** Populates the catalogue interface. */

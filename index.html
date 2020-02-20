@@ -11,14 +11,22 @@
   <script type="module" src="./js/browser/main.js"></script>
 </head>
 <body>
-  <template id="categorySearch">
-    <div class="ui search">
-      <div class="ui icon input">
-        <input class="prompt" type="text" placeholder="Search Catalogue ">
-        <i class="search icon"></i>
+  <template id="js-category-template">
+    <div class="two fields">
+      <div class="field">
+        <div class="ui search js-category-search">
+          <div class="ui icon input">
+            <input class="prompt" type="text" placeholder="Select from Catalogue">
+            <i class="search icon"></i>
+          </div>
+          <div class="results"></div>
+        </div>
       </div>
-      <div class="results"></div>
+      <div class="field">
+        <input type="text" class="prompt js-category-citation" placeholder="Enter Citation">
+      </div>
     </div>
-  </template>
+  </div>
+</template>
 </body>
 </html>

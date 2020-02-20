@@ -28,6 +28,7 @@ Make sure it runs locally before updating on the server, see releasechecklist.md
 
 ### Code Style
 Specified in the ESlint config file `.eslintrc.json`.
+Follow [How to name css classes](http://bdavidxyz.com/blog/how-to-name-css-classes/).
 
 ### Scripts
 * `npm run test` runs the mocha tests
