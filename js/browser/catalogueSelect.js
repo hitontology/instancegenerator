@@ -8,21 +8,52 @@ export default class CatalogueSelect
   constructor(parent,catalogues)
   {
     this.catalogues = catalogues;
+    this.name = rdf.niceSuffix(catalogues[0].type);
+    /** @type {Map<string,string>} */
+    this.entryCitations = new Map();
 
     // clone template from index.html
     const container = document.getElementById("js-category-template").content.cloneNode(true).children[0];
     parent.appendChild(container);
+
     this.uiSearch = container.querySelector(".js-category-search");
     this.uiSearch.id = window.crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
+    this.uiSearch.querySelector(".prompt").placeholder="Select from "+this.name;
 
-    this.uiSearch.querySelector(".prompt").placeholder="Select from "+rdf.niceSuffix(catalogues[0].type);
+    this.citation = container.querySelector(".js-category-citation");
+    this.citation.addEventListener("change", this.enterCitation.bind(this));
+
+    this.selectEntry = this.selectEntry.bind(this);
+  }
+
+  /** User wants to created a new citation */
+  enterCitation(e)
+  {
+    const value = e.target.value;
+    if(!this.selected)
+    {
+      this.citation.value = "Please select a catalogue entry first.";
+      return;
+    }
+    if(value.length<3)
+    {
+      this.citation.value = "Please enter at least 3 characters.";
+      return;
+    }
+    {this.entryCitations.set(this.selected,value) ;}
   }
 
   /** Event handler for selecting a catalogue entry. */
   selectEntry(result,response)
   {
+    const uri = result.id;
+    this.selected = uri;
     console.log(result);
-    return false; // prevent default action, see https://semantic-ui.com/modules/search.html#/settings
+    //console.log(`Selected ${this.name} entry`,uri);
+    this.citation.placeholder = "Enter Citation for "+result.title;
+    const oldValue = this.entryCitations.get(uri);
+    this.citation.value = oldValue || "";
+    //return false; // prevent default action, see https://semantic-ui.com/modules/search.html#/settings
   }
 
   /** Populates the catalogue interface. */
