@@ -69,6 +69,13 @@ export class Resource
     return this.niceSuffix;
   }
 
+  /** Lexical form of the first comment, or null if there is none.*/
+  comment()
+  {
+    if(this.comments.length===0) {return null;}
+    return this.comments[0].split("@")[0];
+  }
+
   /** Queries the SPARQL endpoint for a map of URIs to resources for all members of the given resource
   * Use the cached versions getMember() and getMembers() instead.
   * @return {Map<string,Resource>} the members of the resource */
