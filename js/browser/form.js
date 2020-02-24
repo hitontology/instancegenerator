@@ -49,6 +49,7 @@ export default class Form
 
     for(const p of this.properties)
     {
+      if(p.type===OPROP&&!p.range) {console.warn("No range found for property "+p.uri);continue;}
       if(p.type===OPROP&&catalogueClasses.includes(p.range.uri)) {continue;}
 
       const field = document.createElement("div");
