@@ -103,7 +103,10 @@ export default class CatalogueSelect
       for(const i of (await cat.getMembers()).values())
       {
         //console.log({category: cat.label(), title: i.label()});
-        categoryContent.push({category: cat.label(), title: i.label(), id: i.uri});
+        let category = cat.label();
+        if(cat.comment())  {category=`<a title="${cat.comment()}" href="${cat.uri}" target="_blank">${category}</a>`;}
+        //const title = i.label()+`<a href="${i.uri}" target="_blank">Browse</a>`; // is displayed incorrectly
+        categoryContent.push({category: category, title: i.label(), id: i.uri});
       }
     }
     //uiSearch.search(...) does not work
