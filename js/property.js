@@ -57,4 +57,6 @@ export class Property
 
 export const RDFS_LABEL = new Property(rdf.long("rdfs:label"),"label",DPROP);
 export const RDFS_COMMENT = new Property(rdf.long("rdfs:comment"),"comment",DPROP);
-DEFAULT_PROPERTIES.push(RDFS_LABEL,RDFS_COMMENT);
+//export const DOAP_REPOSITORY = new Property(rdf.long("doap:repository"),"code repository",OPROP);
+
+DEFAULT_PROPERTIES.push(RDFS_LABEL,RDFS_COMMENT);//,DOAP_REPOSITORY);
