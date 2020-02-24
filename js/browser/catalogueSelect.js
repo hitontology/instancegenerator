@@ -106,7 +106,7 @@ export default class CatalogueSelect
         let category = cat.label();
         if(cat.comment())  {category=`<a title="${cat.comment()}" href="${cat.uri}" target="_blank">${category}</a>`;}
         //const title = i.label()+`<a href="${i.uri}" target="_blank">Browse</a>`; // is displayed incorrectly
-        categoryContent.push({category: category, title: i.label(), id: i.uri});
+        categoryContent.push({category: category, title: i.label(), id: i.uri, description: i.comment() || undefined});
       }
     }
     //uiSearch.search(...) does not work
@@ -117,7 +117,7 @@ export default class CatalogueSelect
           source: categoryContent,
           fullTextSearch: true,
           maxResults: 30,
-          searchFields: ["category", "title"],
+          searchFields: ["category", "title", "description"],
           minCharacters: 0,
           onSelect: this.selectEntry,
         });
