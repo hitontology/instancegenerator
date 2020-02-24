@@ -42,9 +42,9 @@ export default class Form
     this.properties = await Property.domainProperties(this.clazz);
 
     this.catalogueSelects = [
-      await new CatalogueSelect(form,await featureCatalogues()).init(),
-      await new CatalogueSelect(form,await functionCatalogues()).init(),
       await new CatalogueSelect(form,await applicationSystemCatalogues()).init(),
+      await new CatalogueSelect(form,await functionCatalogues()).init(),
+      await new CatalogueSelect(form,await featureCatalogues()).init(),
     ];
 
     for(const p of this.properties)
