@@ -113,6 +113,8 @@ export default class CatalogueSelect
     {
       $('#'+this.uiSearch.id)
         .search({
+          name: this.name+' Search',
+          namespace: "search"+this.uiSearch.id,
           type: 'category',
           source: categoryContent,
           fullTextSearch: true,
