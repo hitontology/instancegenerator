@@ -1,6 +1,7 @@
 /** @module
 Form to create a new instance of the given OWL Class. */
 import * as rdf from "../rdf.js";
+import * as sparql from "../sparql.js";
 import {Property,DPROP,OPROP} from "../property.js";
 import Select from "./select.js";
 import CatalogueSelect from "./catalogueSelect.js";
@@ -70,8 +71,8 @@ export default class Form
       }
       else
       {
-        const select = new Select(field,p);
-        /*await*/ select.init();
+        p.select = new Select(field,p);
+        await p.select.init();
       }
     }
 
@@ -81,6 +82,8 @@ export default class Form
     submitButton.value="Create";
     this.form.appendChild(submitButton);
     submitButton.addEventListener("click",this.submit);
+
+    await this.load("http://hitontology.eu/ontology/Bahmni");
   }
 
   /** Remove the form from the DOM. */
@@ -113,5 +116,46 @@ export default class Form
       text+=c.text()+"\n";
     }
     alert(text);
+  }
+
+  /** Load an existing instance into a new form. Form needs to be initialized. */
+  async load(uri)
+  {
+    // all triples with the given uri as subject
+    const query = `SELECT ?p ?o
+      {
+        <${uri}> ?p ?o.
+      }`;
+    const bindings = sparql.flat(await sparql.select(query,sparql.HITO,`select all triples of ${this.uri}`));
+    //console.log(bindings);
+    const values = new Map();
+    this.properties.forEach(p=>{values.set(p.uri,[]);}); // JavaScript doesn't have a native multi map, so emulate our own
+    bindings.forEach(b=>
+    {
+      const v = values.get(b.p);
+      if(!v) {return;} // we don't use the property in our form
+      //console.log(values.get(p.uri));
+      v.push(b.o);
+    });
+    console.log(values);
+
+    for(const p of this.properties)
+    {
+      if(!p.select) {continue;}
+      console.log(`Setting values ${JSON.stringify(values.get(p.uri))} for property ${p.uri}.`);
+      //p.select.select.value = values.get(p.uri);
+      for(const v of values.get(p.uri))
+      {
+        // select.options is of type HTMLOptionsCollection, see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionsCollection
+        // see https://stackoverflow.com/a/43255752/398963
+        const options = [...p.select.select.options];
+        if(!options) {break;}
+        console.log(options);
+        const opt = options.find(o =>o.value === v);
+        if(opt){opt.selected = true;}
+        //p.select.select.selected = v;
+        //break;
+      }
+    }
   }
 }
