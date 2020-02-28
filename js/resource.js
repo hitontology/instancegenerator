@@ -33,13 +33,15 @@ function guessSources(uri)
 
 export class Resource
 {
-  /** Labels, altLabels and comments are arrays of strings that can be empty.  */
-  constructor(uri,type,labels,altLabels,comments)
+  /** Labels, altLabels and comments are arrays of strings that can be empty.
+   * @param {Array<String>} types the rdf:types of the resource*/
+  constructor(uri,types,labels,altLabels,comments)
   {
     this.uri = uri;
-    this.type = type;
-    this.memberRelation = memberRelations.get(type);
-    this.suffix = rdf.suffix(uri);
+    this.types = types;
+    this.memberRelation = memberRelations.get(types[0]);
+    if(!this.memberRelation) {console.log(uri,types);}
+    {this.suffix = rdf.suffix(uri);}
     this.niceSuffix = rdf.niceSuffix(uri);
     this.labels = labels;
     this.altLabels = altLabels;
@@ -85,12 +87,16 @@ export class Resource
     const restriction = memberRestrictions.get(this.uri);
     if(restriction) {pattern+="\n"+restriction;}
 
-    const query  = `SELECT ?uri ?type
+    const typePattern = this.memberRelation===rdf.long("rdf:type")?
+      "":"?uri a ?type";
+
+    const query  = `SELECT ?uri
+    GROUP_CONCAT(DISTINCT(?type);SEPARATOR="|") AS ?types
     GROUP_CONCAT(DISTINCT(CONCAT(?l,"@",lang(?l)));SEPARATOR="|") AS ?l
     GROUP_CONCAT(DISTINCT(CONCAT(?al,"@",lang(?al)));SEPARATOR="|") AS ?al
     GROUP_CONCAT(DISTINCT(CONCAT(?cmt,"@",lang(?cmt)));SEPARATOR="|") AS ?cmt
     {
-      ?uri a ?type.
+      ${typePattern}
       ${pattern}
       OPTIONAL {?uri rdfs:label ?l.}
       OPTIONAL {?uri skos:altLabel ?al.}
@@ -107,8 +113,10 @@ export class Resource
     bindings.forEach(b=>
     {
       {
+        const types =  this.memberRelation===rdf.long("rdf:type")?
+          [rdf.long("owl:Class")]:unpack(b.types);
         members.set(b.uri,
-          new Resource(b.uri,b.type,unpack(b.l),unpack(b.al),unpack(b.cmt)));
+          new Resource(b.uri,types,unpack(b.l),unpack(b.al),unpack(b.cmt)));
       }
     });
     //this.instanceIndex = new ResourceIndex(this.members);

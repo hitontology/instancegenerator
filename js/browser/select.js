@@ -1,11 +1,13 @@
-/** Container with a Form this.select element containing instances and a search function.
+/** Container with a Form multi select element containing resources and a search function.
 @module */
 const SEARCH = false;
 
-export default class Select
+class Select
 {
-  /** Add a dropdown menu to the given field where the user can this.select from the given values and a search field and attach it to the given field.*/
-  constructor(field,property)
+  /** Add a dropdown menu to the given field where the user can this.select from the given values and a search field and attach it to the given field.
+  @param {HTMLElement} field the container to append this element to. Should have class "field".
+  @param {Property} property*/
+  oldconstructor(field,property)
   {
     //const container = document.createElement("div");
     //container.classList.add("field");
@@ -13,10 +15,9 @@ export default class Select
 
     this.select = document.createElement("select");
     this.field.append(this.select);
+
     this.property = property;
-    //this.select.style.display="block";
-    this.select.classList.add("large");
-    this.select.classList.add("ui","fluid","dropdown","multiple","search","loading");
+    this.select.classList.add("large","ui","fluid","dropdown","multiple","search","loading");
     this.select.name = property.uri;
     this.select.id = property.uri;
     this.select.setAttribute("multiple","");
@@ -24,6 +25,56 @@ export default class Select
     labelOption.innerText = property.range.label();
     labelOption.value="";
     this.select.appendChild(labelOption);
+  }
+
+  /** Add a dropdown menu to the given field where the user can this.select from the given values and a search field and attach it to the given field.
+  @param {HTMLElement} field the container to append this element to. Should have class "field".
+  @param {String} label the label of the select element
+  @param {String} id the id of the select element
+  @param {Resource} resources the the resources to fill in the list
+   */
+  constructor(field/*,name*/,label,id,resources)
+  {
+    //const container = document.createElement("div");
+    //container.classList.add("field");
+    this.field = field;
+
+    this.select = document.createElement("select");
+    this.field.append(this.select);
+    this.select.classList.add("large","ui","fluid","dropdown","multiple","search","loading");
+    //this.select.name = name;
+    this.select.id = id;
+    this.select.setAttribute("multiple","");
+    const labelOption = document.createElement("option"); // not actually clickable, used by semantic ui as placeholder when no items are this.selected
+    labelOption.innerText = label;
+    labelOption.value="";
+    this.select.appendChild(labelOption);
+
+    const options = [];
+    try
+    {
+      for(const r of resources)
+      {
+        const option = document.createElement("option");
+        option.resource = r;
+        options.push(option);
+        option.value = r.uri;
+        option.innerText = r.label();
+      }
+      options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
+      this.select.append(...options);
+      this.property.selected = () => [...options].filter(o => o.selected).map(o => o.value);
+      if(SEARCH) {this.addSearch(options);}
+    }
+    catch (e)
+    {
+      this.select.parentElement.classList.add("error","disabled");
+    }
+    finally
+    {
+      this.select.classList.remove("loading");
+      this.select.parentElement.classList.remove("loading"); // Semantic UI may have already created a parent div with the loading class
+    }
   }
 
   /** *Adds search on change. */
@@ -42,7 +93,7 @@ export default class Select
       const hits = this.property.range.search(input.value);
       for(const o of options)
       {
-        o.style.display = hits.includes(o.instance.uri)?"":"none";
+        o.style.display = hits.includes(o.resource.uri)?"":"none";
       }
     });
     this.field.append(input);
@@ -58,7 +109,7 @@ export default class Select
       for(const i of members)
       {
         const option = document.createElement("option");
-        option.instance = i;
+        option.resource = i;
         options.push(option);
         option.value = i.uri;
         option.innerText = i.label();
@@ -78,4 +129,10 @@ export default class Select
       this.select.parentElement.classList.remove("loading"); // Semantic UI may have already created a parent div with the loading class
     }
   }
+}
+
+/** @return a new Select filled with the instances of the range of a property.*/
+export async function selectPropertyRange(field,property)
+{
+  return new Select(field,property.label,property.id,(await property.range.getMembers()).values());
 }

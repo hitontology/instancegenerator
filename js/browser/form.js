@@ -3,7 +3,7 @@ Form to create a new instance of the given OWL Class. */
 import * as rdf from "../rdf.js";
 import * as sparql from "../sparql.js";
 import {Property,DPROP,OPROP} from "../property.js";
-import Select from "./select.js";
+import {selectPropertyRange} from "./select.js";
 import CatalogueSelect from "./catalogueSelect.js";
 import {functionCatalogues,featureCatalogues,applicationSystemCatalogues} from '../catalogue.js';
 
@@ -18,14 +18,17 @@ const catalogueClasses = [ // handled by catalogues
 export default class Form
 {
   /** Create the form but don't populate it yet. Use myForm.container to attach it to the DOM.*/
-  constructor(clazz)
+  constructor(clazzUri)
   {
-    this.clazz = clazz;
+    this.clazzUri = clazzUri;
     this.labelForResource = new Map();
     this.container = document.createElement("div");
     this.container.classList.add("form-container"); // flexbox
     const h1 = document.createElement("h1");
-    h1.innerText = "Add "+rdf.short(clazz);
+    h1.innerText = "Add "+rdf.short(clazzUri);
+
+    //loadSelect = new Select(field,p);
+
     this.form = document.createElement("form");
     //this.form.id=id;
     this.container.append(h1,this.form);
@@ -39,7 +42,7 @@ export default class Form
     form.classList.add("ui","form");
     this.form.appendChild(form);
 
-    this.properties = await Property.domainProperties(this.clazz);
+    this.properties = await Property.domainProperties(this.clazzUri);
 
     this.catalogueSelects = [
       await new CatalogueSelect(form,await applicationSystemCatalogues()).init(),
@@ -70,8 +73,7 @@ export default class Form
       }
       else
       {
-        p.select = new Select(field,p);
-        await p.select.init();
+        p.select = await selectPropertyRange(field,p);
       }
     }
 

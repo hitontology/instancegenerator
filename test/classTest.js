@@ -19,6 +19,7 @@ describe('Clazz', function()
         promises.push(getClass(uri));
       }
       const c = (await Promise.all(promises))[0];
+      console.log(c,uri);
       assert.includeMembers([...(await c.getMembers()).keys()],benchmark[uri].instances);
     }
   },
