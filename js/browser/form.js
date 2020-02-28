@@ -17,14 +17,13 @@ const catalogueClasses = [ // handled by catalogues
 
 export default class Form
 {
-  /** Create the form but don't populate it yet.*/
+  /** Create the form but don't populate it yet. Use myForm.container to attach it to the DOM.*/
   constructor(clazz)
   {
     this.clazz = clazz;
     this.labelForResource = new Map();
     this.container = document.createElement("div");
     this.container.classList.add("form-container"); // flexbox
-    document.body.appendChild(this.container);
     const h1 = document.createElement("h1");
     h1.innerText = "Add "+rdf.short(clazz);
     this.form = document.createElement("form");
@@ -87,10 +86,10 @@ export default class Form
   }
 
   /** Remove the form from the DOM. */
-  unregister()
+  /*unregister()
   {
     document.body.removeChild(this.container);
-  }
+  }*/
 
   /** Generate RDF from form*/
   submit(e)

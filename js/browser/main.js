@@ -11,8 +11,9 @@ let activeForm;
 /** Sets the active form class. */
 async function setClass(clazz)
 {
-  if(activeForm) {activeForm.unregister();}
+  if(activeForm) {document.body.removeChild(this.container);}
   activeForm = new Form(clazz);
+  document.body.prepend(activeForm.container);
   await activeForm.init();
 }
 
