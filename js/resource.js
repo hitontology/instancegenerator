@@ -91,7 +91,7 @@ export class Resource
       "":"?uri a ?type";
 
     const query  = `SELECT ?uri
-    GROUP_CONCAT(DISTINCT(?type);SEPARATOR="|") AS ?types
+    ${this.memberRelation===rdf.long("rdf:type")?"":"GROUP_CONCAT(DISTINCT(?type);SEPARATOR="|") AS ?types"}
     GROUP_CONCAT(DISTINCT(CONCAT(?l,"@",lang(?l)));SEPARATOR="|") AS ?l
     GROUP_CONCAT(DISTINCT(CONCAT(?al,"@",lang(?al)));SEPARATOR="|") AS ?al
     GROUP_CONCAT(DISTINCT(CONCAT(?cmt,"@",lang(?cmt)));SEPARATOR="|") AS ?cmt

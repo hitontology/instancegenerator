@@ -12,7 +12,7 @@ const DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql";
 export const DBPEDIA = {graph: DBPEDIA_GRAPH,endpoint: DBPEDIA_ENDPOINT, name: "DBpedia"};
 export const HITO = {graph: HITO_GRAPH,endpoint: HITO_ENDPOINT, name: "HITO"};
 
-const LOG = true;
+const LOG = false;
 
 class SparqlError extends Error
 {
