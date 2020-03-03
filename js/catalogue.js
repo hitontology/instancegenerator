@@ -25,7 +25,7 @@ export async function featureCatalogue()
 
 }
 
-/** */
+/**@returns Array<Resource> the catalogue resources of the class with the given URI. */
 export async function getCatalogues(classUri)// catalogueClass,catalogueRelation
 {
   const catalogueClass = await getClass(classUri);

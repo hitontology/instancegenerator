@@ -2,7 +2,7 @@
 import * as rdf from "./rdf.js";
 import {Resource} from "./resource.js";
 
-/** @type {Promise<Class>}  */
+/** @type {Resource}  */
 const owlClass = new Resource("http://www.w3.org/2002/07/owl#Class",["http://www.w3.org/2002/07/owl#Class"],["class"],[],[]);
 
 /** define any other classes here
@@ -17,7 +17,8 @@ const customClassData =
     .map(r=>[r.uri,r]);
 const customClasses = new Map(customClassData);
 
-/** Get the class with the given URI. */
+/** @param uri {string} The URI of the class.
+Get the class with the given URI. */
 export default async function getClass(uri)
 {
   let clazz = (await owlClass.getMembers()).get(uri);

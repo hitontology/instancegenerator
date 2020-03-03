@@ -24,13 +24,15 @@ export default class CatalogueSelect
     this.entryCitations = new Map();
 
     // clone template from index.html
-    const container = document.getElementById("js-category-template").content.cloneNode(true).children[0];
+    const template = /** @type {HTMLTemplateElement} */ (document.getElementById("js-category-template"));
+    const container = /** @type Element */ (template.content.cloneNode(true)).children[0];
     parent.appendChild(container);
 
     this.uiSearch = container.querySelector(".js-category-search");
     this.uiSearch.id = window.crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
-    this.uiSearch.querySelector(".prompt").placeholder="Select from "+this.name;
+    /** @type HTMLInputElement */ (this.uiSearch.querySelector(".prompt")).placeholder="Select from "+this.name;
 
+    /** @type HTMLInputElement */
     this.citation = container.querySelector(".js-category-citation");
     this.citation.addEventListener("change", this.enterCitation.bind(this));
 
@@ -118,7 +120,8 @@ export default class CatalogueSelect
           namespace: "search"+this.uiSearch.id,
           type: 'category',
           source: categoryContent,
-          fullTextSearch: true,
+          // @ts-ignore https://github.com/Semantic-Org/Semantic-UI/issues/6961
+          fullTextSearch: "exact",
           maxResults: 30,
           searchFields: ["category", "title", "description"],
           minCharacters: 0,

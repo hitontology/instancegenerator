@@ -8,7 +8,7 @@ class Select
   @param {HTMLElement} field the container to append this element to. Should have class "field".
   @param {String} label the label of the select element
   @param {String} id the id of the select element
-  @param {Resource} resources the the resources to fill in the list
+  @param {Array} resources the resources to fill in the list
    */
   constructor(field/*,name*/,label,id,resources)
   {
@@ -33,6 +33,7 @@ class Select
       for(const r of resources)
       {
         const option = document.createElement("option");
+        // @ts-ignore
         option.resource = r;
         options.push(option);
         option.value = r.uri;
@@ -40,6 +41,7 @@ class Select
       }
       options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
       this.select.append(...options);
+      // @ts-ignore
       this.property.selected = () => [...options].filter(o => o.selected).map(o => o.value);
       if(SEARCH) {this.addSearch(options);}
     }
@@ -86,6 +88,7 @@ class Select
       for(const i of members)
       {
         const option = document.createElement("option");
+        // @ts-ignore
         option.resource = i;
         options.push(option);
         option.value = i.uri;
