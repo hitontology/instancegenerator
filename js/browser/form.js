@@ -127,7 +127,7 @@ export default class Form
       {
         <${uri}> ?p ?o.
       }`;
-    const bindings = sparql.flat(await sparql.select(query,sparql.HITO,`select all triples of ${this.uri}`));
+    const bindings = sparql.flat(await sparql.select(query,sparql.HITO,`select all triples of ${uri}`));
     //console.log(bindings);
     const values = new Map();
     this.properties.forEach(p=>{values.set(p.uri,[]);}); // JavaScript doesn't have a native multi map, so emulate our own
