@@ -2,16 +2,6 @@
 import * as rdf from "./rdf.js";
 import {Resource} from "./resource.js";
 
-/*
-export class Clazz extends Resource
-{
-  constructor(uri,labels,altLabels,comments)
-  {
-    super(uri,labels,altLabels,comments,"a");
-  }
-}
-*/
-
 /** @type {Promise<Class>}  */
 const owlClass = new Resource("http://www.w3.org/2002/07/owl#Class",["http://www.w3.org/2002/07/owl#Class"],["class"],[],[]);
 
