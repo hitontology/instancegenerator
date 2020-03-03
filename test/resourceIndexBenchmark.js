@@ -19,7 +19,7 @@ const benchmark =
     queries: ["Care_of_the_elderly_department_environment", "Care of the elderly department environment", "Care of the elderly", "department environment", "elderly department", "care the elderly department"],
   },
   {
-    class: "http://dbpedia.org/ontology/ProgrammingLanguage",
+    class: "http://dbpedia.org/class/yago/WikicatProgrammingLanguages",
     instance: "http://dbpedia.org/resource/Python_(programming_language)",
     queries: ["Python", "python", "py", "Pithon"],
   },
