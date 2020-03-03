@@ -6,29 +6,6 @@ class Select
 {
   /** Add a dropdown menu to the given field where the user can this.select from the given values and a search field and attach it to the given field.
   @param {HTMLElement} field the container to append this element to. Should have class "field".
-  @param {Property} property*/
-  oldconstructor(field,property)
-  {
-    //const container = document.createElement("div");
-    //container.classList.add("field");
-    this.field = field;
-
-    this.select = document.createElement("select");
-    this.field.append(this.select);
-
-    this.property = property;
-    this.select.classList.add("large","ui","fluid","dropdown","multiple","search","loading");
-    this.select.name = property.uri;
-    this.select.id = property.uri;
-    this.select.setAttribute("multiple","");
-    const labelOption = document.createElement("option"); // not actually clickable, used by semantic ui as placeholder when no items are this.selected
-    labelOption.innerText = property.range.label();
-    labelOption.value="";
-    this.select.appendChild(labelOption);
-  }
-
-  /** Add a dropdown menu to the given field where the user can this.select from the given values and a search field and attach it to the given field.
-  @param {HTMLElement} field the container to append this element to. Should have class "field".
   @param {String} label the label of the select element
   @param {String} id the id of the select element
   @param {Resource} resources the the resources to fill in the list
