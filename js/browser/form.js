@@ -67,7 +67,7 @@ export default class Form
       {
         const text = document.createElement("input");
         field.appendChild(text);
-        text.setAttribute("type",text);
+        text.setAttribute("type","text");
         text.classList.add("textline");
         p.text = () => text.value;
       }
