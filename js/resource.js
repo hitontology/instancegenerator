@@ -90,6 +90,13 @@ export class Resource
     const typePattern = this.memberRelation===rdf.long("rdf:type")?
       "":"?uri a ?type";
 
+    const languages = ["en","de",""];
+    //LANGMATCHES(LANG(${y})
+    const languageFilter = (v) => `FILTER(${
+      languages.map(l=>`LANGMATCHES(LANG(?${v}),"${l}")`)
+        .reduce((a,b)=>a+" || "+b)
+    })`;
+
     const query  = `SELECT ?uri
     ${this.memberRelation===rdf.long("rdf:type")?"":"GROUP_CONCAT(DISTINCT(?type);SEPARATOR="|") AS ?types"}
     GROUP_CONCAT(DISTINCT(CONCAT(?l,"@",lang(?l)));SEPARATOR="|") AS ?l
@@ -98,9 +105,9 @@ export class Resource
     {
       ${typePattern}
       ${pattern}
-      OPTIONAL {?uri rdfs:label ?l.}
-      OPTIONAL {?uri skos:altLabel ?al.}
-      OPTIONAL {?uri rdfs:comment ?cmt.}
+      OPTIONAL {?uri rdfs:label ?l. ${languageFilter("l")}}
+      OPTIONAL {?uri skos:altLabel ?al. ${languageFilter("al")}}
+      OPTIONAL {?uri rdfs:comment ?cmt. ${languageFilter("cmt")}}
     }`;
 
     const bindings = [];
