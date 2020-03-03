@@ -17,6 +17,7 @@ export default class CatalogueSelect
   {
     this.catalogues = catalogues;
     this.type = catalogues[0].types[0];
+    if(!this.type) {throw new Error("No type for catalogues "+JSON.stringify(catalogues));}
     this.types = catalogueTypes[this.type];
     this.name = rdf.niceSuffix(this.type);
     /** @type {Map<string,string>} */
