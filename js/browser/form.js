@@ -59,7 +59,7 @@ export default class Form
       field.classList.add("field");
       form.appendChild(field);
       const label = document.createElement("label");
-      label.for= p.uri;
+      label.htmlFor= p.uri;
       label.innerText = p.label;
       field.appendChild(label);
 
