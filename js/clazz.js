@@ -32,5 +32,6 @@ export default async function getClass(uri)
 {
   let clazz = (await owlClass.getMembers()).get(uri);
   if(!clazz) {clazz = customClasses.get(uri);} // fallback
+  if(!clazz) {throw new Error("No class found with URI "+uri);}
   return clazz;
 }
