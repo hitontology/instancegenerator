@@ -84,7 +84,7 @@ export default class Form
     this.form.appendChild(submitButton);
     submitButton.addEventListener("click",this.submit);
 
-    await this.load("http://hitontology.eu/ontology/Bahmni");
+    //await this.load("http://hitontology.eu/ontology/Bahmni");
   }
 
   /** Remove the form from the DOM. */
@@ -138,7 +138,6 @@ export default class Form
       //console.log(values.get(p.uri));
       v.push(b.o);
     });
-    console.log(values);
 
     for(const p of this.properties)
     {
@@ -151,7 +150,7 @@ export default class Form
         // see https://stackoverflow.com/a/43255752/398963
         const options = [...p.select.select.options];
         if(!options) {break;}
-        console.log(options);
+        //console.log(options);
         const opt = options.find(o =>o.value === v);
         if(opt){opt.selected = true;}
         //p.select.select.selected = v;
