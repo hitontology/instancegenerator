@@ -16,7 +16,7 @@ export default class CatalogueSelect
   constructor(parent,catalogues)
   {
     this.catalogues = catalogues;
-    this.type = catalogues[0].type;
+    this.type = catalogues[0].types[0];
     this.types = catalogueTypes[this.type];
     this.name = rdf.niceSuffix(this.type);
     /** @type {Map<string,string>} */
