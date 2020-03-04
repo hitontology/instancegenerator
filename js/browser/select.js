@@ -10,7 +10,7 @@ class Select
   @param {String} id the id of the select element
   @param {Array} resources the resources to fill in the list
    */
-  constructor(field/*,name*/,label,id,resources)
+  constructor(field,label,placeholder,id,resources)
   {
     //const container = document.createElement("div");
     //container.classList.add("field");
@@ -19,7 +19,6 @@ class Select
     this.select = document.createElement("select");
     this.field.append(this.select);
     this.select.classList.add("large","ui","fluid","dropdown","multiple","search","loading");
-    //this.select.name = name;
     this.select.id = id;
     this.select.setAttribute("multiple","");
     const labelOption = document.createElement("option"); // not actually clickable, used by semantic ui as placeholder when no items are this.selected
