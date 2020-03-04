@@ -3,9 +3,10 @@ Form to create a new instance of the given OWL Class. */
 import * as rdf from "../rdf.js";
 import * as sparql from "../sparql.js";
 import {Property,DPROP,OPROP} from "../property.js";
-import {selectPropertyRange} from "./select.js";
+import {selectPropertyRange,Select} from "./select.js";
 import CatalogueSelect from "./catalogueSelect.js";
 import {functionCatalogues,featureCatalogues,applicationSystemCatalogues} from '../catalogue.js';
+import getClass from '../clazz.js';
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
 
@@ -27,8 +28,6 @@ export default class Form
     const h1 = document.createElement("h1");
     h1.innerText = "Add "+rdf.short(clazzUri);
 
-    //loadSelect = new Select(field,p);
-
     this.form = document.createElement("form");
     //this.form.id=id;
     this.container.append(h1,this.form);
@@ -44,6 +43,20 @@ export default class Form
 
     this.properties = await Property.domainProperties(this.clazzUri);
 
+    // Loading **************************************************************
+    {
+      const clazz = await getClass(this.clazzUri);
+      const label = document.createElement("label");
+      form.appendChild(label);
+      const loadSelect = new Select(form,"Load Instance","Load Existing "+clazz.label(),"myid",(await clazz.getMembers()).values(),false);
+      const s = loadSelect.select;
+      label.htmlFor= loadSelect;
+      label.innerText = "Load "+clazz.label();
+      //s.addEventListener("change",()=>this.load(s.options[s.selectedIndex].value));
+      s.addEventListener("change",async () =>await this.load("http://hitontology.eu/ontology/Bahmni"));
+    }
+    // **********************************************************************
+
     this.catalogueSelects = [
       await new CatalogueSelect(form,await applicationSystemCatalogues()).init(),
       await new CatalogueSelect(form,await functionCatalogues()).init(),
@@ -53,7 +66,6 @@ export default class Form
     {
       if(p.type===OPROP&&!p.range) {console.warn("No range found for property "+p.uri);continue;}
       if(p.type===OPROP&&catalogueClasses.includes(p.range.uri)) {continue;} // catalogues are handled separately
-
       const field = document.createElement("div");
       field.classList.add("field");
       form.appendChild(field);
@@ -87,7 +99,7 @@ export default class Form
 
   /** Remove the form from the DOM. */
   /*unregister()
-  {
+    {
     document.body.removeChild(this.container);
   }*/
 
@@ -122,9 +134,9 @@ export default class Form
   {
     // all triples with the given uri as subject
     const query = `SELECT ?p ?o
-      {
-        <${uri}> ?p ?o.
-      }`;
+    {
+      <${uri}> ?p ?o.
+    }`;
     const bindings = sparql.flat(await sparql.select(query,sparql.HITO,`select all triples of ${uri}`));
     //console.log(bindings);
     const values = new Map();

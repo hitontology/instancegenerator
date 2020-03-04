@@ -1,7 +1,7 @@
 /** Container with a Form multi select element containing resources and a search function.
 @module */
 
-class Select
+export class Select
 {
   /** Add a dropdown menu to the given field where the user can this.select from the given values and a search field and attach it to the given field.
   @param {HTMLElement} field the container to append this element to. Should have class "field".
@@ -9,7 +9,7 @@ class Select
   @param {String} id the id of the select element
   @param {Array} resources the resources to fill in the list
   */
-  constructor(field,label,placeholder,id,resources)
+  constructor(field,label,placeholder,id,resources,multiple=true)
   {
     //const container = document.createElement("div");
     //container.classList.add("field");
@@ -17,9 +17,13 @@ class Select
 
     this.select = document.createElement("select");
     this.field.append(this.select);
-    this.select.classList.add("large","ui","fluid","dropdown","multiple","search","loading");
+    this.select.classList.add("large","ui","fluid","dropdown","search","loading");
+    if(multiple)
+    {
+      this.select.classList.add("multiple");
+      this.select.setAttribute("multiple","");
+    }
     this.select.id = id;
-    this.select.setAttribute("multiple","");
     const labelOption = document.createElement("option"); // not actually clickable, used by semantic ui as placeholder when no items are selected
     labelOption.innerText = placeholder;
     labelOption.value="";
