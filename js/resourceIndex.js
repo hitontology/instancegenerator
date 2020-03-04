@@ -35,6 +35,7 @@ export default class ResourceIndex
       const item = {uri: r.uri, l: labels, al: r.alternativeLabel, suffix: r.suffix, cmt: r.comments};
       items.push(item);
     }
+    // @ts-ignore // Fuse is a global
     this.index = new Fuse(items,options);
   }
 

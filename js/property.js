@@ -19,6 +19,7 @@ export class Property
     if(!label) {this.label = rdf.short(uri);}
     this.type = type;
     if(type!==OPROP&&type!==DPROP) {console.warn(`Unknown type ${type} for property ${uri} with label ${label}.`);}
+    this.range = null;
   }
 
   /** returns an array of all properties that have the given domain*/
@@ -47,7 +48,6 @@ export class Property
     for(const b of bindings)
     {
       const p = new Property(b.uri,b.label,b.type);
-      //p.range = new Class();
       p.range = await getClass(b.range);
       properties.push(p);
     }

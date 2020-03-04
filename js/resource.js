@@ -34,7 +34,7 @@ function guessSources(uri)
 export class Resource
 {
   /** Labels, altLabels and comments are arrays of strings that can be empty.
-   * @param {Array<String>} types the rdf:types of the resource*/
+  * @param {Array<String>} types the rdf:types of the resource*/
   constructor(uri,types,labels,altLabels,comments)
   {
     this.uri = uri;
@@ -80,7 +80,7 @@ export class Resource
 
   /** Queries the SPARQL endpoint for a map of URIs to resources for all members of the given resource
   * Use the cached versions getMember() and getMembers() instead.
-  * @return {Map<string,Resource>} the members of the resource */
+  * @return {Promise<Map<string,Resource>>} the members of the resource */
   async queryMembers()
   {
     let pattern= `?uri <${this.memberRelation}> <${this.uri}>.`;
@@ -98,7 +98,7 @@ export class Resource
     })`;
 
     const query  = `SELECT ?uri
-    ${this.memberRelation===rdf.long("rdf:type")?"":"GROUP_CONCAT(DISTINCT(?type);SEPARATOR="|") AS ?types"}
+    ${(this.memberRelation===rdf.long("rdf:type"))?"":"GROUP_CONCAT(DISTINCT(?type);SEPARATOR="|") AS ?types"}
     GROUP_CONCAT(DISTINCT(CONCAT(?l,"@",lang(?l)));SEPARATOR="|") AS ?l
     GROUP_CONCAT(DISTINCT(CONCAT(?al,"@",lang(?al)));SEPARATOR="|") AS ?al
     GROUP_CONCAT(DISTINCT(CONCAT(?cmt,"@",lang(?cmt)));SEPARATOR="|") AS ?cmt
@@ -141,9 +141,9 @@ export class Resource
 
 /** Query the resource that has the given URI with all its members.
     @param relation optional type relation*/
+/*
 async function queryResource(uri)
 {
-  /*
       if(!owlClassInstances)
       {
       // initial fetching of all classes
@@ -156,8 +156,8 @@ async function queryResource(uri)
     },
   );
 }
-*/
 }
+*/
 
 /*const instance = (await owlClassInstances).get(uri);
 if(!instance)

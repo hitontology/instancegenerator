@@ -6,7 +6,8 @@ import {Resource} from "./resource.js";
 const owlClass = new Resource("http://www.w3.org/2002/07/owl#Class",["http://www.w3.org/2002/07/owl#Class"],["class"],[],[]);
 
 /** define any other classes here
- include yago classes manually as there are too many of them in DBpedia to fetch them all and they don't have type owl:Class */
+ include yago classes manually as there are too many of them in DBpedia to fetch them all and they don't have type owl:Class
+ @type Array[any] */
 const customClassData =
   [
     ["yago:WikicatProgrammingLanguages","Programming Language"],
