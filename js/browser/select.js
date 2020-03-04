@@ -50,37 +50,6 @@ class Select
       this.select.parentElement.classList.remove("loading"); // Semantic UI may have already created a parent div with the loading class
     }
   }
-
-  /** Populate the list. */
-  async init()
-  {
-    const options = [];
-    try
-    {
-      const members = (await this.property.range.getMembers()).values();
-      for(const i of members)
-      {
-        const option = document.createElement("option");
-        // @ts-ignore
-        option.resource = i;
-        options.push(option);
-        option.value = i.uri;
-        option.innerText = i.label();
-      }
-      options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
-      this.select.append(...options);
-      this.property.selected = () => [...options].filter(o => o.selected).map(o => o.value);
-    }
-    catch (e)
-    {
-      this.select.parentElement.classList.add("error","disabled");
-    }
-    finally
-    {
-      this.select.classList.remove("loading");
-      this.select.parentElement.classList.remove("loading"); // Semantic UI may have already created a parent div with the loading class
-    }
-  }
 }
 
 /** @return a new Select filled with the instances of the range of a property.*/
