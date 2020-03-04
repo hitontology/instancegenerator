@@ -9,7 +9,7 @@ class Select
   @param {String} label the label of the select element
   @param {String} id the id of the select element
   @param {Array} resources the resources to fill in the list
-   */
+  */
   constructor(field,label,placeholder,id,resources)
   {
     //const container = document.createElement("div");
@@ -21,12 +21,12 @@ class Select
     this.select.classList.add("large","ui","fluid","dropdown","multiple","search","loading");
     this.select.id = id;
     this.select.setAttribute("multiple","");
-    const labelOption = document.createElement("option"); // not actually clickable, used by semantic ui as placeholder when no items are this.selected
-    labelOption.innerText = label;
+    const labelOption = document.createElement("option"); // not actually clickable, used by semantic ui as placeholder when no items are selected
+    labelOption.innerText = placeholder;
     labelOption.value="";
     this.select.appendChild(labelOption);
 
-    const options = [];
+    this.options = [];
     try
     {
       for(const r of resources)
@@ -34,15 +34,13 @@ class Select
         const option = document.createElement("option");
         // @ts-ignore
         option.resource = r;
-        options.push(option);
+        this.options.push(option);
         option.value = r.uri;
         option.innerText = r.label();
       }
-      options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
-      this.select.append(...options);
-      // @ts-ignore
-      this.property.selected = () => [...options].filter(o => o.selected).map(o => o.value);
-      if(SEARCH) {this.addSearch(options);}
+      this.options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
+      this.select.append(...this.options);
+      if(SEARCH) {this.addSearch(this.options);}
     }
     catch (e)
     {
@@ -91,5 +89,7 @@ class Select
 /** @return a new Select filled with the instances of the range of a property.*/
 export async function selectPropertyRange(field,property)
 {
-  return new Select(field,property.label,property.id,(await property.range.getMembers()).values());
+  const select = new Select(field,property.label,property.range.label(),property.id,(await property.range.getMembers()).values());
+  property.selected = () => select.options.filter(o => o.selected).map(o => o.value);
+  return select;
 }
