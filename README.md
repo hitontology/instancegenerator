@@ -39,3 +39,6 @@ Medical informatics experts of the HITO project.
 
 ### Usage Requirements
 Any modern browser should work as long as it supports ES6 modules. Optimized for PC. Internet Explorer is not supported.
+
+### Other
+Test CORS at https://hitontology.github.io/instancegenerator/cors.html.
