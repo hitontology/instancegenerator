@@ -1,6 +1,5 @@
 /** Container with a Form multi select element containing resources and a search function.
 @module */
-const SEARCH = false;
 
 class Select
 {
@@ -40,7 +39,6 @@ class Select
       }
       this.options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
       this.select.append(...this.options);
-      if(SEARCH) {this.addSearch(this.options);}
     }
     catch (e)
     {
@@ -72,7 +70,6 @@ class Select
       options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
       this.select.append(...options);
       this.property.selected = () => [...options].filter(o => o.selected).map(o => o.value);
-      if(SEARCH) {this.addSearch(options);}
     }
     catch (e)
     {
