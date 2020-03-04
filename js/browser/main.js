@@ -38,7 +38,7 @@ async function main()
   await setClass(select.value);
   */
   await setClass("http://hitontology.eu/ontology/SoftwareProduct");
-  $('.ui.dropdown').dropdown();
+  $('.ui.dropdown').dropdown({fullTextSearch: true});
   console.groupEnd();
 }
 
