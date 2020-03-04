@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+<script async type="module" src="./js/sparql.js"></script>
+</head>
+<body>
+  <h1>CORS Test</h1>
+  <h2>HITO</h2>
+  <span id="hito"></span>
+  <span id="hitoError" style="color:red"></span>
+  <h2>DBpedia</h2>
+  <span id="dbp"></span>
+  <span id="dbpError" style="color:red"></span>
+  <script type="module">
+  import * as s from './js/sparql.js';
+  async function doit()
+  {
+   const hito = document.getElementById("hito");
+   const hitoError = document.getElementById("hitoError");
+   try{
+     hito.innerText=JSON.stringify(await s.select("select * {?s ?p ?o.} limit 1", s.HITO));
+   }catch(e){
+     hitoError.innerText=e.message;
+   }
+
+   const dbp = document.getElementById("dbp");
+   const dbpError = document.getElementById("dbpError");
+   try{
+     dbp.innerText=JSON.stringify(await s.select("select * {?s ?p ?o.} limit 1", s.DBPEDIA));
+   }catch(e){
+     dbpError.innerText=e.message;
+   }
+}
+doit();
+  </script>
+
+</body>
+</html>
