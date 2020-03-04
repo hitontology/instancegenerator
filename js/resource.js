@@ -40,8 +40,7 @@ export class Resource
     this.uri = uri;
     this.types = types;
     this.memberRelation = memberRelations.get(types[0]);
-    if(!this.memberRelation) {console.log(uri,types);}
-    {this.suffix = rdf.suffix(uri);}
+    this.suffix = rdf.suffix(uri);
     this.niceSuffix = rdf.niceSuffix(uri);
     this.labels = labels;
     this.altLabels = altLabels;
@@ -88,7 +87,7 @@ export class Resource
     if(restriction) {pattern+="\n"+restriction;}
 
     const typePattern = this.memberRelation===rdf.long("rdf:type")?
-      "":"?uri a ?type";
+      "":"?uri a ?type.";
 
     const languages = ["en","de",""];
     //LANGMATCHES(LANG(${y})
@@ -121,7 +120,7 @@ export class Resource
     {
       {
         const types =  this.memberRelation===rdf.long("rdf:type")?
-          [rdf.long("owl:Class")]:unpack(b.types);
+          [this.uri]:unpack(b.types);
         members.set(b.uri,
           new Resource(b.uri,types,unpack(b.l),unpack(b.al),unpack(b.cmt)));
       }
@@ -142,19 +141,19 @@ export class Resource
 /** Query the resource that has the given URI with all its members.
     @param relation optional type relation*/
 /*
-async function queryResource(uri)
-{
-      if(!owlClassInstances)
-      {
-      // initial fetching of all classes
-      const c = (new Resource(rdf.long("owl:Class"),[],[],[]),relation);
-      owlClassInstances = c.loadInstances().then(()=>
-      {
-      const m = new Map();
-      [...c.instances,...customClassInstances].forEach(i=>{m.set(i.uri,i);});
-      return m;
-    },
-  );
+    async function queryResource(uri)
+    {
+    if(!owlClassInstances)
+    {
+    // initial fetching of all classes
+    const c = (new Resource(rdf.long("owl:Class"),[],[],[]),relation);
+    owlClassInstances = c.loadInstances().then(()=>
+    {
+    const m = new Map();
+    [...c.instances,...customClassInstances].forEach(i=>{m.set(i.uri,i);});
+    return m;
+  },
+);
 }
 }
 */

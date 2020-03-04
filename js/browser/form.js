@@ -49,7 +49,6 @@ export default class Form
       await new CatalogueSelect(form,await functionCatalogues()).init(),
       await new CatalogueSelect(form,await featureCatalogues()).init(),
     ];
-
     for(const p of this.properties)
     {
       if(p.type===OPROP&&!p.range) {console.warn("No range found for property "+p.uri);continue;}
@@ -76,7 +75,6 @@ export default class Form
         p.select = await selectPropertyRange(field,p);
       }
     }
-
     const submitButton = document.createElement("input");
     submitButton.classList.add("ui","submit","button");
     submitButton.type="submit";

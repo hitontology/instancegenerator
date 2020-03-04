@@ -100,12 +100,10 @@ export default class CatalogueSelect
   async init()
   {
     const categoryContent = [];
-
     for(const cat of this.catalogues)
     {
       for(const i of (await cat.getMembers()).values())
       {
-        //console.log({category: cat.label(), title: i.label()});
         let category = cat.label();
         if(cat.comment())  {category=`<a title="${cat.comment()}" href="${cat.uri}" target="_blank">${category}</a>`;}
         //const title = i.label()+`<a href="${i.uri}" target="_blank">Browse</a>`; // is displayed incorrectly
