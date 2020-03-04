@@ -55,28 +55,6 @@ class Select
     }
   }
 
-  /** *Adds search on change. */
-  addSearch(options)
-  {
-    const input = document.createElement("input");
-    input.classList.add("search");
-    input.addEventListener("change",()=>
-    {
-      if(input.value==="")
-      {
-        for(const o of options) {o.style.display="none";}
-        return;
-      }
-      console.log(options);
-      const hits = this.property.range.search(input.value);
-      for(const o of options)
-      {
-        o.style.display = hits.includes(o.resource.uri)?"":"none";
-      }
-    });
-    this.field.append(input);
-  }
-
   /** Populate the list. */
   async init()
   {
