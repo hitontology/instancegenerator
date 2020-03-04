@@ -53,7 +53,7 @@ export default class Form
     for(const p of this.properties)
     {
       if(p.type===OPROP&&!p.range) {console.warn("No range found for property "+p.uri);continue;}
-      if(p.type===OPROP&&catalogueClasses.includes(p.range.uri)) {continue;}
+      if(p.type===OPROP&&catalogueClasses.includes(p.range.uri)) {continue;} // catalogues are handled separately
 
       const field = document.createElement("div");
       field.classList.add("field");
@@ -100,7 +100,7 @@ export default class Form
     let text = "";
     for(const p of this.properties)
     {
-      if(!p.selected)
+      if(!p.selected) // the selected function is added by the select element
       {
         if(!p.text) {continue;}
         text+=product + ` <${p.uri}> "${p.text()}"@en.\n`;
