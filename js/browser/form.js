@@ -52,8 +52,7 @@ export default class Form
       const s = loadSelect.select;
       label.htmlFor= loadSelect;
       label.innerText = "Load "+clazz.label();
-      //s.addEventListener("change",()=>this.load(s.options[s.selectedIndex].value));
-      s.addEventListener("change",async () =>await this.load("http://hitontology.eu/ontology/Bahmni"));
+      s.addEventListener("change",()=>this.load(s.options[s.selectedIndex].value));
     }
     // **********************************************************************
 
@@ -103,7 +102,8 @@ export default class Form
     document.body.removeChild(this.container);
   }*/
 
-  /** Generate RDF from form*/
+  /** Generate R      console.log(`Setting values ${JSON.stringify(values.get(p.uri))} for property ${p.uri}.`);
+DF from form*/
   submit(e)
   {
     e.preventDefault();
@@ -129,9 +129,27 @@ export default class Form
     alert(text);
   }
 
-  /** Load an existing instance into a new form. Form needs to be initialized. */
+  /** Clear all selected values. */
+  clear()
+  {
+    for(const p of this.properties)
+    {
+      if(!p.select) {continue;}
+      // ********************in case it is not converted yet by Semantic UI to its own structure *******
+      const options = [...p.select.select.options];
+      options.forEach(o=>{o.selected=false;});
+      // Semantic UI Way *******************************************************************************
+      const div = p.select.select.parentElement;
+      div.id = p.select.select.id+"-div";
+      $("#"+$.escapeSelector(div.id)).dropdown("clear");
+    }
+  }
+
+  /** Load an existing instance. Existing values are kept. Form needs to be initialized. */
   async load(uri)
   {
+    this.clear();
+    console.log("Loading",uri);
     // all triples with the given uri as subject
     const query = `SELECT ?p ?o
     {
@@ -152,20 +170,28 @@ export default class Form
     for(const p of this.properties)
     {
       if(!p.select) {continue;}
-      console.log(`Setting values ${JSON.stringify(values.get(p.uri))} for property ${p.uri}.`);
       //p.select.select.value = values.get(p.uri);
-      for(const v of values.get(p.uri))
+      // select.options is of type HTMLOptionsCollection, see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionsCollection
+      // see https://stackoverflow.com/a/43255752/398963
+      const options = [...p.select.select.options];
+      if(!options) {break;}
+      const vs = values.get(p.uri);
+      console.log(`Setting values ${JSON.stringify(vs)} for property ${p.uri}.`);
+      // ********************in case it is not converted yet by Semantic UI to its own structure *******
+      for(const v of vs)
       {
-        // select.options is of type HTMLOptionsCollection, see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionsCollection
-        // see https://stackoverflow.com/a/43255752/398963
-        const options = [...p.select.select.options];
-        if(!options) {break;}
         //console.log(options);
         const opt = options.find(o =>o.value === v);
-        if(opt){opt.selected = true;}
+        if(opt){opt.selected = true;console.log(opt);}
         //p.select.select.selected = v;
         //break;
       }
+      // Semantic UI Way *******************************************************************************
+      const div = p.select.select.parentElement;
+      //div.dropdown("set selected",vs); // does not work, see https://stackoverflow.com/questions/60546024/how-to-call-the-semantic-ui-dropdown-function-directly-on-an-element
+      div.id = p.select.select.id+"-div";
+      $("#"+$.escapeSelector(div.id)).dropdown("set selected",vs);
+      // ***********************************************************************************************
     }
   }
 }

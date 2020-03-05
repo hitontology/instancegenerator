@@ -59,7 +59,7 @@ export class Select
 /** @return a new Select filled with the instances of the range of a property.*/
 export async function selectPropertyRange(field,property)
 {
-  const select = new Select(field,property.label,property.range.label(),property.id,(await property.range.getMembers()).values());
+  const select = new Select(field,property.label,property.range.label(),property.uri,(await property.range.getMembers()).values());
   property.selected = () => select.options.filter(o => o.selected).map(o => o.value);
   return select;
 }
