@@ -8,6 +8,7 @@ import CatalogueSelect from "./catalogueSelect.js";
 import {functionCatalogues,featureCatalogues,applicationSystemCatalogues} from '../catalogue.js';
 import getClass from '../clazz.js';
 import field from './field.js';
+import {createGitHubIssue} from './util.js';
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
 
@@ -120,7 +121,8 @@ DF from form*/
       console.log(c,c.text());
       text+=c.text()+"\n";
     }
-    alert(text);
+    //alert(text);
+    createGitHubIssue("Create Instance","```"+text+"```");
   }
 
   /** Clear all selected values. */
