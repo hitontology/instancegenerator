@@ -7,6 +7,7 @@ import {selectPropertyRange,Select} from "./select.js";
 import CatalogueSelect from "./catalogueSelect.js";
 import {functionCatalogues,featureCatalogues,applicationSystemCatalogues} from '../catalogue.js';
 import getClass from '../clazz.js';
+import field from './field.js';
 
 const product = "<http://hitontology.eu/ontology/MyProduct>";
 
@@ -45,44 +46,38 @@ export default class Form
     // Loading **************************************************************
     {
       const clazz = await getClass(this.clazzUri);
-      const label = document.createElement("label");
-      form.appendChild(label);
-      const loadSelect = new Select(form,"Load Instance","Load Existing "+clazz.label(),"myid",(await clazz.getMembers()).values(),false);
-      const s = loadSelect.select;
-      label.htmlFor= loadSelect;
-      label.innerText = "Load "+clazz.label();
+      const loadSelect = new Select("Load Existing "+clazz.label(),"myid",(await clazz.getMembers()).values(),false);
+      const s = loadSelect.element;
       s.addEventListener("change",()=>this.load(s.options[s.selectedIndex].value));
     }
     // **********************************************************************
 
     this.catalogueSelects = [
-      await new CatalogueSelect(form,await applicationSystemCatalogues()).init(),
-      await new CatalogueSelect(form,await functionCatalogues()).init(),
-      await new CatalogueSelect(form,await featureCatalogues()).init(),
+      await new CatalogueSelect(await applicationSystemCatalogues()).init(),
+      await new CatalogueSelect(await functionCatalogues()).init(),
+      await new CatalogueSelect(await featureCatalogues()).init(),
     ];
+    this.catalogueSelects.forEach(c=>
+      form.appendChild(field(c.name,c.element)),
+    );
+
     for(const p of this.properties)
     {
       if(p.type===OPROP&&!p.range) {console.warn("No range found for property "+p.uri);continue;}
       if(p.type===OPROP&&catalogueClasses.includes(p.range.uri)) {continue;} // catalogues are handled separately
-      const field = document.createElement("div");
-      field.classList.add("field");
-      form.appendChild(field);
-      const label = document.createElement("label");
-      label.htmlFor= p.uri;
-      label.innerText = p.label;
-      field.appendChild(label);
 
       if(p.type===DPROP)
       {
         const text = document.createElement("input");
-        field.appendChild(text);
         text.setAttribute("type","text");
         text.classList.add("textline");
         p.text = () => text.value;
+        form.appendChild(field(p.label,text));
       }
       else
       {
         p.select = await selectPropertyRange(field,p);
+        form.appendChild(field(p.label,p.select.element));
       }
     }
     const submitButton = document.createElement("input");
@@ -135,11 +130,11 @@ DF from form*/
     {
       if(!p.select) {continue;}
       // ********************in case it is not converted yet by Semantic UI to its own structure *******
-      const options = [...p.select.select.options];
+      const options = [...p.select.element.options];
       options.forEach(o=>{o.selected=false;});
       // Semantic UI Way *******************************************************************************
-      const div = p.select.select.parentElement;
-      div.id = p.select.select.id+"-div";
+      const div = p.select.element.parentElement;
+      div.id = p.select.element.id+"-div";
       $("#"+$.escapeSelector(div.id)).dropdown("clear");
     }
   }
@@ -169,10 +164,10 @@ DF from form*/
     for(const p of this.properties)
     {
       if(!p.select) {continue;}
-      //p.select.select.value = values.get(p.uri);
+      //p.select.element.value = values.get(p.uri);
       // select.options is of type HTMLOptionsCollection, see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionsCollection
       // see https://stackoverflow.com/a/43255752/398963
-      const options = [...p.select.select.options];
+      const options = [...p.select.element.options];
       if(!options) {break;}
       const vs = values.get(p.uri);
       console.log(`Setting values ${JSON.stringify(vs)} for property ${p.uri}.`);
@@ -182,13 +177,13 @@ DF from form*/
         //console.log(options);
         const opt = options.find(o =>o.value === v);
         if(opt){opt.selected = true;console.log(opt);}
-        //p.select.select.selected = v;
+        //p.select.element.selected = v;
         //break;
       }
       // Semantic UI Way *******************************************************************************
-      const div = p.select.select.parentElement;
+      const div = p.select.element.parentElement;
       //div.dropdown("set selected",vs); // does not work, see https://stackoverflow.com/questions/60546024/how-to-call-the-semantic-ui-dropdown-function-directly-on-an-element
-      div.id = p.select.select.id+"-div";
+      div.id = p.select.element.id+"-div";
       $("#"+$.escapeSelector(div.id)).dropdown("set selected",vs);
       // ***********************************************************************************************
     }

@@ -13,7 +13,7 @@ export default class CatalogueSelect
 {
   /** Create a container where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations.
    * All catalogues need to be of the same rdf:type, such as all feature catalogues or all enterprise function catalogues. */
-  constructor(parent,catalogues)
+  constructor(catalogues)
   {
     this.catalogues = catalogues;
     this.type = catalogues[0].types[0];
@@ -25,15 +25,14 @@ export default class CatalogueSelect
 
     // clone template from index.html
     const template = /** @type {HTMLTemplateElement} */ (document.getElementById("js-category-template"));
-    const container = /** @type Element */ (template.content.cloneNode(true)).children[0];
-    parent.appendChild(container);
+    this.element = /** @type Element */ (template.content.cloneNode(true)).children[0];
 
-    this.uiSearch = container.querySelector(".js-category-search");
+    this.uiSearch = this.element.querySelector(".js-category-search");
     this.uiSearch.id = window.crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
     /** @type HTMLInputElement */ (this.uiSearch.querySelector(".prompt")).placeholder="Select from "+this.name;
 
     /** @type HTMLInputElement */
-    this.citation = container.querySelector(".js-category-citation");
+    this.citation = this.element.querySelector(".js-category-citation");
     this.citation.addEventListener("change", this.enterCitation.bind(this));
 
     this.selectEntry = this.selectEntry.bind(this);
@@ -51,8 +50,6 @@ export default class CatalogueSelect
   /** RDF triples in turtle text form.*/
   text()
   {
-    console.log(this.entryCitations);
-    console.log(this.entryCitations.entries());
     let text = "";
     for(const [uri,name] of this.entryCitations.entries())
     {
@@ -86,6 +83,7 @@ export default class CatalogueSelect
   /** Event handler for selecting a catalogue entry. */
   selectEntry(result,response)
   {
+    console.log("SELEÄÄCT");
     const uri = result.id;
     this.selected = uri;
     //console.log(result);
@@ -111,6 +109,7 @@ export default class CatalogueSelect
       }
     }
     //uiSearch.search(...) does not work
+    document.body.appendChild(this.element); // add temporarily, otherwise it won't be found by jquery
     {
       $('#'+this.uiSearch.id)
         .search({
@@ -119,13 +118,14 @@ export default class CatalogueSelect
           type: 'category',
           source: categoryContent,
           // @ts-ignore https://github.com/Semantic-Org/Semantic-UI/issues/6961
-          fullTextSearch: "exact",
+          fullTextSearch: true,
           maxResults: 30,
           searchFields: ["category", "title", "description"],
           minCharacters: 0,
           onSelect: this.selectEntry,
         });
     }
+    document.body.removeChild(this.element); // remove from DOM again
     return this;
   }
 }

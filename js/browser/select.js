@@ -3,63 +3,51 @@
 
 export class Select
 {
-  /** Add a dropdown menu to the given field where the user can this.select from the given values and a search field and attach it to the given field.
-  @param {HTMLElement} field the container to append this element to. Should have class "field".
-  @param {String} label the label of the select element
+  /** Create a dropdown menu where the user can select from the given values and filter using a search field.
+   * Use Select.select to attach it to the DOM.
+  @param {String} placeholder the placeholder when no element is selected
   @param {String} id the id of the select element
   @param {Array} resources the resources to fill in the list
+  @param {boolean} multiple Whether to allow multi select. Defaults to true.
   */
-  constructor(field,label,placeholder,id,resources,multiple=true)
+  constructor(placeholder,id,resources,multiple=true)
   {
-    //const container = document.createElement("div");
-    //container.classList.add("field");
-    this.field = field;
+    this.element = document.createElement("select");
 
-    this.select = document.createElement("select");
-    this.field.append(this.select);
-    this.select.classList.add("large","ui","fluid","dropdown","search","loading");
+    this.element.classList.add("large","ui","fluid","dropdown","search");
     if(multiple)
     {
-      this.select.classList.add("multiple");
-      this.select.setAttribute("multiple","");
+      this.element.classList.add("multiple");
+      this.element.setAttribute("multiple","");
     }
-    this.select.id = id;
+    this.element.id = id;
     const labelOption = document.createElement("option"); // not actually clickable, used by semantic ui as placeholder when no items are selected
     labelOption.innerText = placeholder;
     labelOption.value="";
-    this.select.appendChild(labelOption);
+    this.element.appendChild(labelOption);
 
     this.options = [];
-    try
+    for(const r of resources)
     {
-      for(const r of resources)
-      {
-        const option = document.createElement("option");
-        // @ts-ignore
-        option.resource = r;
-        this.options.push(option);
-        option.value = r.uri;
-        option.innerText = r.label();
-      }
-      this.options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
-      this.select.append(...this.options);
+      const option = document.createElement("option");
+      // @ts-ignore
+      option.resource = r;
+      this.options.push(option);
+      option.value = r.uri;
+      option.innerText = r.label();
     }
-    catch (e)
-    {
-      this.select.parentElement.classList.add("error","disabled");
-    }
-    finally
-    {
-      this.select.classList.remove("loading");
-      this.select.parentElement.classList.remove("loading"); // Semantic UI may have already created a parent div with the loading class
-    }
+    this.options.sort((a,b)=>a.innerText.localeCompare(b.innerText));
+    this.element.append(...this.options);
+    //this.element.parentElement.classList.add("error","disabled");
+    //this.element.classList.remove("loading");
+    //this.element.parentElement.classList.remove("loading"); // Semantic UI may have already created a parent div with the loading class
   }
 }
 
 /** @return a new Select filled with the instances of the range of a property.*/
 export async function selectPropertyRange(field,property)
 {
-  const select = new Select(field,property.label,property.range.label(),property.uri,(await property.range.getMembers()).values());
+  const select = new Select(property.range.label(),property.uri,(await property.range.getMembers()).values());
   property.selected = () => select.options.filter(o => o.selected).map(o => o.value);
   return select;
 }
