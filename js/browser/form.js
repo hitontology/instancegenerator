@@ -22,7 +22,6 @@ export default class Form
   constructor(clazzUri)
   {
     this.clazzUri = clazzUri;
-    this.labelForResource = new Map();
     this.container = document.createElement("div");
     this.container.classList.add("form-container"); // flexbox
     const h1 = document.createElement("h1");
