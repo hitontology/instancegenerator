@@ -78,12 +78,14 @@ export default class CatalogueSelect
     }
     console.log(`New value for ${this.selected}: ${value}`);
     this.entryCitations.set(this.selected,value);
+
+    //this.categoryContent.get(this.selected).title="changed title";
+    //$('#'+this.uiSearch.id).search('setting', 'source', [...this.categoryContent.values()]);
   }
 
   /** Event handler for selecting a catalogue entry. */
   selectEntry(result,response)
   {
-    console.log("SELEÄÄCT");
     const uri = result.id;
     this.selected = uri;
     //console.log(result);
@@ -97,7 +99,7 @@ export default class CatalogueSelect
   /** Populates the catalogue interface. */
   async init()
   {
-    const categoryContent = [];
+    this.categoryContent = new Map();
     for(const cat of this.catalogues)
     {
       for(const i of (await cat.getMembers()).values())
@@ -105,26 +107,27 @@ export default class CatalogueSelect
         let category = cat.label();
         if(cat.comment())  {category=`<a title="${cat.comment()}" href="${cat.uri}" target="_blank">${category}</a>`;}
         //const title = i.label()+`<a href="${i.uri}" target="_blank">Browse</a>`; // is displayed incorrectly
-        categoryContent.push({category: category, title: i.label(), id: i.uri, description: i.comment() || undefined});
+        this.categoryContent.set(i.uri,{category: category, title: i.label()+` <span id="${i.uri+"-span"}">Test</span>`, id: i.uri, description: i.comment() || undefined});
       }
     }
+    console.log(this.categoryContent.values());
     //uiSearch.search(...) does not work
     document.body.appendChild(this.element); // add temporarily, otherwise it won't be found by jquery
-    {
-      $('#'+this.uiSearch.id)
-        .search({
-          name: this.name+' Search',
-          namespace: "search"+this.uiSearch.id,
-          type: 'category',
-          source: categoryContent,
-          // @ts-ignore https://github.com/Semantic-Org/Semantic-UI/issues/6961
-          fullTextSearch: true,
-          maxResults: 30,
-          searchFields: ["category", "title", "description"],
-          minCharacters: 0,
-          onSelect: this.selectEntry,
-        });
-    }
+    $('#'+this.uiSearch.id)
+      .search({
+        name: this.name+' Search',
+        //namespace: "search"+this.uiSearch.id, // bug, see https://github.com/Semantic-Org/Semantic-UI/issues/6963
+        type: 'category',
+        source: [...this.categoryContent.values()],
+        // @ts-ignore https://github.com/Semantic-Org/Semantic-UI/issues/6961
+        fullTextSearch: true,
+        maxResults: 30,
+        searchFields: ["category", "title", "description"],
+        //categoryRenderer: ()=>"bla",
+        //categoryLayoutRenderer: ()=>"bla",
+        minCharacters: 0,
+        onSelect: this.selectEntry,
+      });
     document.body.removeChild(this.element); // remove from DOM again
     return this;
   }
