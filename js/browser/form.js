@@ -83,7 +83,7 @@ export default class Form
     }
     const submitButton = document.createElement("input");
     submitButton.classList.add("ui","submit","button");
-    submitButton.type="submit";
+    //submitButton.type="submit";  // prevent enter submit
     submitButton.value="Create";
     this.form.appendChild(submitButton);
     submitButton.addEventListener("click",this.submit);
