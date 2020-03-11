@@ -71,6 +71,14 @@ export default class CatalogueSelect
       this.citation.value = "Please select a catalogue entry first.";
       return;
     }
+    const c = this.categoryContent.get(this.selected);
+    if(value==="") // clear
+    {
+      console.log(`Cleared value for ${this.selected}.`);
+      this.entryCitations.delete(this.selected,value);
+      c.description = (c.oldDesc || "");
+      return;
+    }
     if(value.length<3)
     {
       this.citation.value = "Please enter at least 3 characters.";
@@ -79,8 +87,9 @@ export default class CatalogueSelect
     console.log(`New value for ${this.selected}: ${value}`);
     this.entryCitations.set(this.selected,value);
 
-    //this.categoryContent.get(this.selected).title="changed title";
-    //$('#'+this.uiSearch.id).search('setting', 'source', [...this.categoryContent.values()]);
+    if(!c.oldDesc) {c.oldDesc=c.description;}
+    c.description = (c.oldDesc || "") + `<p>"${value}"</p>`;
+    $('#'+this.uiSearch.id).search('setting', 'source', [...this.categoryContent.values()]);
   }
 
   /** Event handler for selecting a catalogue entry. */
@@ -88,8 +97,6 @@ export default class CatalogueSelect
   {
     const uri = result.id;
     this.selected = uri;
-    //console.log(result);
-    //console.log(`Selected ${this.name} entry`,uri);
     this.citation.placeholder = "Enter Citation for "+result.title;
     const oldValue = this.entryCitations.get(uri);
     this.citation.value = oldValue || "";
@@ -107,7 +114,7 @@ export default class CatalogueSelect
         let category = cat.label();
         if(cat.comment())  {category=`<a title="${cat.comment()}" href="${cat.uri}" target="_blank">${category}</a>`;}
         //const title = i.label()+`<a href="${i.uri}" target="_blank">Browse</a>`; // is displayed incorrectly
-        this.categoryContent.set(i.uri,{category: category, title: i.label()+` <span id="${i.uri+"-span"}">Test</span>`, id: i.uri, description: i.comment() || undefined});
+        this.categoryContent.set(i.uri,{category: category, title: i.label(), id: i.uri, description: i.comment() || undefined});
       }
     }
     console.log(this.categoryContent.values());
@@ -123,8 +130,6 @@ export default class CatalogueSelect
         fullTextSearch: true,
         maxResults: 30,
         searchFields: ["category", "title", "description"],
-        //categoryRenderer: ()=>"bla",
-        //categoryLayoutRenderer: ()=>"bla",
         minCharacters: 0,
         onSelect: this.selectEntry,
       });
