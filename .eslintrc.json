@@ -36,7 +36,7 @@
 		"dot-notation": ["error"],
 		"eqeqeq": ["error"],
 		"eol-last": ["error"],
-		"max-len": ["warn",220],
+		"max-len": ["warn",230],
 		"padded-blocks": ["error","never"],
 		"space-in-parens": ["error"],
 		"brace-style": ["error","allman",{"allowSingleLine":true}],

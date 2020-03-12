@@ -16,6 +16,8 @@ new Map([
   ["hito:FeatureClassified","hito:featureClassified"],
   ["hito:EnterpriseFunctionCatalogue","hito:functionCatalogue"],
   ["hito:ApplicationSystemCatalogue","hito:applicationSystemCatalogue"],
+  ["hito:OrganizationalUnitCatalogue","hito:organizationalUnitCatalogue"],
+  ["hito:UserGroupCatalogue","hito:userGroupCatalogue"],
   //["hito:FeatureCitation","hito:featureC"],
 ].map(([x,y])=>[rdf.long(x),rdf.long(y)]));
 

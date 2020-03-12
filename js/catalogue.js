@@ -37,5 +37,9 @@ export async function getCatalogues(classUri)// catalogueClass,catalogueRelation
 export async function featureCatalogues() {return await getCatalogues("http://hitontology.eu/ontology/FeatureCatalogue");}
 /** All HITO enterprise function catalogues. */
 export async function functionCatalogues() {return await getCatalogues("http://hitontology.eu/ontology/EnterpriseFunctionCatalogue");}
-/** All HITO . */
+/** All HITO application system catalogues. */
 export async function applicationSystemCatalogues() {return await getCatalogues("http://hitontology.eu/ontology/ApplicationSystemCatalogue");}
+/***/
+export async function organizationalUnitCatalogues() {return await getCatalogues("http://hitontology.eu/ontology/OrganizationalUnitCatalogue");}
+/***/
+export async function userGroupCatalogues() {return await getCatalogues("http://hitontology.eu/ontology/UserGroupCatalogue");}

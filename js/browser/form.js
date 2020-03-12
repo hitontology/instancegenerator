@@ -5,7 +5,7 @@ import * as sparql from "../sparql.js";
 import {Property,DPROP,OPROP} from "../property.js";
 import {selectPropertyRange,Select} from "./select.js";
 import CatalogueSelect from "./catalogueSelect.js";
-import {functionCatalogues,featureCatalogues,applicationSystemCatalogues} from '../catalogue.js';
+import * as catalogue from '../catalogue.js';
 import getClass from '../clazz.js';
 import field from './field.js';
 import {createGitHubIssue} from './util.js';
@@ -15,6 +15,8 @@ const product = "<http://hitontology.eu/ontology/MyProduct>";
 const catalogueClasses = [ // handled by catalogues
   "hito:ApplicationSystemCatalogue","hito:ApplicationSystemClassified","hito:ApplicationSystemCitation",
   "hito:FeatureCatalogue","hito:FeatureClassified","hito:FeatureCitation",
+  "hito:EnterpriseFunctionCatalogue","hito:EnterpriseFunctionClassified","hito:EnterpriseFunctionCitation",
+  "hito:UserGroupCatalogue","hito:UserGroupClassified","hito:UserGroupCitation",
   "hito:EnterpriseFunctionCatalogue","hito:EnterpriseFunctionClassified","hito:EnterpriseFunctionCitation"]
   .map(x=>rdf.long(x));
 
@@ -54,9 +56,11 @@ export default class Form
     // **********************************************************************
 
     this.catalogueSelects = [
-      await new CatalogueSelect(await applicationSystemCatalogues()).init(),
-      await new CatalogueSelect(await functionCatalogues()).init(),
-      await new CatalogueSelect(await featureCatalogues()).init(),
+      await new CatalogueSelect(await catalogue.applicationSystemCatalogues()).init(),
+      await new CatalogueSelect(await catalogue.functionCatalogues()).init(),
+      await new CatalogueSelect(await catalogue.featureCatalogues()).init(),
+      await new CatalogueSelect(await catalogue.userGroupCatalogues()).init(),
+      await new CatalogueSelect(await catalogue.organizationalUnitCatalogues()).init(),
     ];
     this.catalogueSelects.forEach(c=>
       form.appendChild(field(c.name,c.element)),

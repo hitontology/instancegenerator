@@ -4,8 +4,10 @@ import * as rdf from "../rdf.js";
 const catalogueTypes =
 {
   "http://hitontology.eu/ontology/FeatureCatalogue": {citationType: "http://hitontology.eu/ontology/FeatureCitation", citationRelation: "http://hitontology.eu/ontology/featureClassified"},
-  "http://hitontology.eu/ontology/EnterpriseFunctionCatalogue": {citationType: "http://hitontology.eu/ontology/EnterpriseFunctionCitation", citationRelation: "http://hitontology.eu/ontology/functionClassified"},
+  "http://hitontology.eu/ontology/EnterpriseFunctionCatalogue": {citationType: "http://hitontology.eu/ontology/EnterpriseFunctionCitation", citationRelation: "http://hitontology.eu/ontology/enterpriseFunctionClassified"},
   "http://hitontology.eu/ontology/ApplicationSystemCatalogue": {citationType: "http://hitontology.eu/ontology/ApplicationSystemCitation", citationRelation: "http://hitontology.eu/ontology/applicationSystemClassified"},
+  "http://hitontology.eu/ontology/UserGroupCatalogue": {citationType: "http://hitontology.eu/ontology/UserGroupCitation", citationRelation: "http://hitontology.eu/ontology/userGroupClassified"},
+  "http://hitontology.eu/ontology/OrganizationalUnitCatalogue": {citationType: "http://hitontology.eu/ontology/OrganizationalUnitCitation", citationRelation: "http://hitontology.eu/ontology/organizationalUnitClassified"},
 };
 
 /** An UI element where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations. */
@@ -15,6 +17,7 @@ export default class CatalogueSelect
    * All catalogues need to be of the same rdf:type, such as all feature catalogues or all enterprise function catalogues. */
   constructor(catalogues)
   {
+    console.log(catalogues);
     this.catalogues = catalogues;
     this.type = catalogues[0].types[0];
     if(!this.type) {throw new Error("No type for catalogues "+JSON.stringify(catalogues));}
