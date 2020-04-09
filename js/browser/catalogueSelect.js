@@ -130,7 +130,7 @@ export default class CatalogueSelect
         type: 'category',
         source: [...this.categoryContent.values()],
         // @ts-ignore https://github.com/Semantic-Org/Semantic-UI/issues/6961
-        fullTextSearch: true,
+        fullTextSearch: "exact",
         maxResults: 30,
         searchFields: ["category", "title", "description"],
         minCharacters: 0,
