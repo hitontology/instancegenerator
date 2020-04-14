@@ -3,12 +3,16 @@ An RDF resource.*/
 import * as rdf from "./rdf.js";
 import * as sparql from "./sparql.js";
 
+/** Data quality fixes for low precision, i.e. the given resources contain too many incorrect members.
+In those cases, members that are presented to the user for selection can be filtered using triple patterns.*/
 const memberRestrictions =
 new Map([
   ["http://dbpedia.org/ontology/Language","?uri <http://dbpedia.org/ontology/iso6391Code> []."],
   ["http://dbpedia.org/class/yago/License106549661","[] <http://dbpedia.org/ontology/license> ?uri."],
 ]);
 
+/** To prevent code duplication, the Resource class queries "members" of both classes and catalogues using the same methods.
+The memberRelations constant specifies, which property to use.*/
 const memberRelations =
 new Map([
   ["owl:Class","rdf:type"],
@@ -28,7 +32,7 @@ function guessSources(uri)
 {
   let sources = [];
   if(uri.includes("dbpedia.org/")) {sources = [sparql.DBPEDIA];}
-  else if(uri.includes("hitontology.eu/"))  {sources = [sparql.HITO];}
+  else if(uri.includes("hitontology.eu/")||uri.includes("http://www.ebi.ac.uk/swo/"))  {sources = [sparql.HITO];}
   else {sources = [sparql.HITO,sparql.DBPEDIA];}
   return sources;
 }
@@ -84,7 +88,15 @@ export class Resource
   * @return {Promise<Map<string,Resource>>} the members of the resource */
   async queryMembers()
   {
+    const members = new Map();
+    if(this.uri==="http://www.w3.org/2000/01/rdf-schema#Resource") {return members;} // workaround, rdfs:Resource instances should be user defined
+
     let pattern= `?uri <${this.memberRelation}> <${this.uri}>.`;
+    // workaround to support subclasses from The Software Ontology
+    if(this.uri==="http://www.ebi.ac.uk/swo/SWO_0000002")
+    {
+      pattern = `?uri rdfs:subClassOf+ <${this.uri}>.`;
+    }
     const restriction = memberRestrictions.get(this.uri);
     if(restriction) {pattern+="\n"+restriction;}
 
@@ -116,7 +128,7 @@ export class Resource
     {
       bindings.push(...sparql.flat(await sparql.select(query,source,`select all members of ${this.uri} from `+source.name)));
     }
-    const members = new Map();
+
     const unpack = s => (s && (s!=="@") && s.split('|')) || []; // "@" occurs on 0 results
     bindings.forEach(b=>
     {
