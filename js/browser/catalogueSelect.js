@@ -17,7 +17,6 @@ export default class CatalogueSelect
    * All catalogues need to be of the same rdf:type, such as all feature catalogues or all enterprise function catalogues. */
   constructor(catalogues)
   {
-    console.log(catalogues);
     this.catalogues = catalogues;
     this.type = catalogues[0].types[0];
     if(!this.type) {throw new Error("No type for catalogues "+JSON.stringify(catalogues));}
@@ -120,7 +119,7 @@ export default class CatalogueSelect
         this.categoryContent.set(i.uri,{category: category, title: i.label(), id: i.uri, description: i.comment() || undefined});
       }
     }
-    console.log(this.categoryContent.values());
+    //console.log(this.categoryContent.values());
     //uiSearch.search(...) does not work
     document.body.appendChild(this.element); // add temporarily, otherwise it won't be found by jquery
     $('#'+this.uiSearch.id)
