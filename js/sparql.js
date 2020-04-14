@@ -10,7 +10,7 @@ const DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql";
 
 // DBpedia is down or slow sometimes, a mirror could help
 export const DBPEDIA = {graph: DBPEDIA_GRAPH,endpoint: DBPEDIA_ENDPOINT, name: "DBpedia"};
-export const HITO = {graph: HITO_GRAPH,endpoint: HITO_ENDPOINT, name: "HITO"};
+export const HITO = {/*graph: HITO_GRAPH,*/ endpoint: HITO_ENDPOINT, name: "HITO"}; // use all graphs in HITO
 
 const LOG = false;
 

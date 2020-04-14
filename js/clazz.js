@@ -13,6 +13,7 @@ const customClassData =
     ["yago:WikicatProgrammingLanguages","Programming Language"],
     ["yago:License106549661","License"],
     ["yago:OperatingSystem106568134","Operating System"],
+    ["swo:SWO_0000002","License"],
     ["rdfs:Resource","URL"]]
     .map(([uri,label]) => new Resource(rdf.long(uri),[rdf.long("owl:Class")],[label+"@en"],[],[]))
     .map(r=>[r.uri,r]);

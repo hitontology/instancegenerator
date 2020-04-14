@@ -11,6 +11,7 @@ const prefixes =
   ["dbr","http://dbpedia.org/resource/"],
   ["yago","http://dbpedia.org/class/yago/"],
   ["doap","http://usefulinc.com/ns/doap#"],
+  ["swo","http://www.ebi.ac.uk/swo/"],
 ];
 
 /**@return {String} the prefix part of a URI if it is defined in this file.*/
