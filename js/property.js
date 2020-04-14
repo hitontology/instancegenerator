@@ -55,7 +55,7 @@ export class Property
       }
       catch(e)
       {
-        console.error("Could not get range for property ",p.uri,"\n",e);
+        console.error("Could not get range class",rdf.short(b.range),"for property",p.uri,"\n",e);
         continue;
       }
       properties.push(p);
