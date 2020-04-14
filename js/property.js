@@ -47,8 +47,17 @@ export class Property
     */
     for(const b of bindings)
     {
+      if(b.type!==OPROP) {continue;}
       const p = new Property(b.uri,b.label,b.type);
-      p.range = await getClass(b.range);
+      try
+      {
+        p.range = await getClass(b.range);
+      }
+      catch(e)
+      {
+        console.error("Could not get range for property ",p.uri,"\n",e);
+        continue;
+      }
       properties.push(p);
     }
     return properties;
