@@ -116,7 +116,7 @@ export default class CatalogueSelect
         let category = cat.label();
         if(cat.comment())  {category=`<a title="${cat.comment()}" href="${cat.uri}" target="_blank">${category}</a>`;}
         //const title = i.label()+`<a href="${i.uri}" target="_blank">Browse</a>`; // is displayed incorrectly
-        this.categoryContent.set(i.uri,{category: category, title: i.label(), id: i.uri, description: i.comment() || undefined});
+        this.categoryContent.set(cat.uri+i.uri,{category: category, title: i.label(), id: i.uri, description: i.comment() || undefined}); // combine catalogue and entry URIs in case of shared catalogue entries
       }
     }
     //console.log(this.categoryContent.values());
