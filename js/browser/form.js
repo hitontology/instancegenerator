@@ -51,6 +51,7 @@ export default class Form
       const clazz = await getClass(this.clazzUri);
       const loadSelect = new Select("Load Existing "+clazz.label(),"myid",(await clazz.getMembers()).values(),false);
       const s = loadSelect.element;
+      form.appendChild(s);
       s.addEventListener("change",()=>this.load(s.options[s.selectedIndex].value));
     }
     // **********************************************************************
