@@ -31,7 +31,7 @@ export default class CatalogueSelect
 
     this.uiSearch = this.element.querySelector(".js-category-search");
     this.uiSearch.id = window.crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
-    /** @type HTMLInputElement */ (this.uiSearch.querySelector(".prompt")).placeholder="Select from "+this.name;
+    /** @type HTMLInputElement */ (this.uiSearch.querySelector(".prompt")).placeholder="Select "+this.name;
 
     /** @type HTMLInputElement */
     this.citation = this.element.querySelector(".js-category-citation");
