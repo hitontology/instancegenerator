@@ -18,7 +18,7 @@ new Map([
   ["owl:Class","rdf:type"],
   ["hito:FeatureCatalogue","hito:featureCatalogue"],
   ["hito:FeatureClassified","hito:featureClassified"],
-  ["hito:EnterpriseFunctionCatalogue","hito:functionCatalogue"],
+  ["hito:EnterpriseFunctionCatalogue","hito:enterpriseFunctionCatalogue"],
   ["hito:ApplicationSystemCatalogue","hito:applicationSystemCatalogue"],
   ["hito:OrganizationalUnitCatalogue","hito:organizationalUnitCatalogue"],
   ["hito:UserGroupCatalogue","hito:userGroupCatalogue"],
