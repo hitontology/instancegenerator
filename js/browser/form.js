@@ -10,8 +10,6 @@ import getClass from '../clazz.js';
 import field from './field.js';
 import {createGitHubIssue} from './util.js';
 
-const product = "<http://hitontology.eu/ontology/MyProduct>";
-
 const catalogueClasses = [ // handled by catalogues
   "hito:ApplicationSystemCatalogue","hito:ApplicationSystemClassified","hito:ApplicationSystemCitation",
   "hito:FeatureCatalogue","hito:FeatureClassified","hito:FeatureCitation",
@@ -32,6 +30,7 @@ export default class Form
     h1.innerText = "Add "+rdf.short(clazzUri);
 
     this.form = document.createElement("form");
+    this.product = "http://hitontology.eu/ontology/"+Math.random().toString(36).substring(2, 15);  //http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
     //this.form.id=id;
     this.container.append(h1,this.form);
     this.submit=this.submit.bind(this);
@@ -113,12 +112,12 @@ DF from form*/
       if(!p.selected) // the selected function is added by the select element
       {
         if(!p.text) {continue;}
-        text+=product + ` <${p.uri}> "${p.text()}"@en.\n`;
+        text+=`<${this.product}> <${p.uri}> "${p.text()}"@en.\n`;
         continue;
       }
       for(const s of p.selected())
       {
-        text+=product + ` <${p.uri}> <${s}>.\n`;
+        text+=`<${this.product}> <${p.uri}> <${s}>.\n`;
       }
     }
     for(const c of this.catalogueSelects)
