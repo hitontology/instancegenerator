@@ -64,59 +64,67 @@ export default class CatalogueSelect
     return text;
   }
 
-  /** User wants to created a new citation */
-  enterCitation(e)
+  /** User wants to create a new citation */
+  enterCitation(changeEvent)
   {
-    const value = e.target.value;
-    if(!this.selected)
+    const newCitation = changeEvent.target.value;
+    console.log(changeEvent);
+    if(!this.selectedClassified) // selected catalogue entry (classified X)
     {
       this.citation.value = "Please select a catalogue entry first.";
       return;
     }
-    const c = this.categoryContent.get(this.selected);
-    if(value==="") // clear
+    const content = this.getContent(this.selectedClassified);
+    if(newCitation==="") // clear
     {
-      console.log(`Cleared value for ${this.selected}.`);
-      this.entryCitations.delete(this.selected,value);
-      c.description = (c.oldDesc || "");
+      console.log(`Cleared value for ${this.selectedClassified}.`);
+      this.entryCitations.delete(this.selectedClassified);
+      content.description = content.originalDescription;
       return;
     }
-    if(value.length<3)
+    if(newCitation.length<3)
     {
       this.citation.value = "Please enter at least 3 characters.";
       return;
     }
-    console.log(`New value for ${this.selected}: ${value}`);
-    this.entryCitations.set(this.selected,value);
+    console.log(`New citation for ${this.selectedClassified}: ${newCitation}`);
+    this.entryCitations.set(this.selectedClassified,newCitation);
 
-    if(!c.oldDesc) {c.oldDesc=c.description;}
-    c.description = (c.oldDesc || "") + `<p>"${value}"</p>`;
+    content.description = content.originalDescription + `<p>"${newCitation}"</p>`;
     $('#'+this.uiSearch.id).search('setting', 'source', [...this.categoryContent.values()]);
   }
 
   /** Event handler for selecting a catalogue entry. */
   selectEntry(result,response)
   {
+    console.log(result);
     const uri = result.id;
-    this.selected = uri;
+    this.selectedClassified = uri;
     this.citation.placeholder = "Enter Citation for "+result.title;
     const oldValue = this.entryCitations.get(uri);
     this.citation.value = oldValue || "";
     //return false; // prevent default action, see https://semantic-ui.com/modules/search.html#/settings
   }
 
+  /** Set Semantic UI content entry for a catalogue entry (classified X).*/
+  setContent(catalogueUri,classifiedUri,content) {this.categoryContent.set(classifiedUri,content);}
+  //setContent(catalogueUri,classifiedUri,content) {this.categoryContent.set(catalogueUri+classifiedUri,content);}
+  /** Get Semantic UI content entry for a catalogue entry (classified X).*/
+  getContent(catalogueUri,classifiedUri) {return this.categoryContent.get(classifiedUri);}
+  //getContent(catalogueUri,classifiedUri) {return this.categoryContent.get(catalogueUri+classifiedUri);}
+
   /** Populates the catalogue interface. */
   async init()
   {
     this.categoryContent = new Map();
-    for(const cat of this.catalogues)
+    for(const catalogue of this.catalogues)
     {
-      for(const i of (await cat.getMembers()).values())
+      for(const classified of (await catalogue.getMembers()).values())
       {
-        let category = cat.label();
-        if(cat.comment())  {category=`<a title="${cat.comment()}" href="${cat.uri}" target="_blank">${category}</a>`;}
+        let category = catalogue.label();
+        if(catalogue.comment())  {category=`<a title="${catalogue.comment()}" href="${catalogue.uri}" target="_blank">${category}</a>`;}
         //const title = i.label()+`<a href="${i.uri}" target="_blank">Browse</a>`; // is displayed incorrectly
-        this.categoryContent.set(cat.uri+i.uri,{category: category, title: i.label(), id: i.uri, description: i.comment() || undefined}); // combine catalogue and entry URIs in case of shared catalogue entries
+        this.setContent(catalogue.uri,classified.uri,{category: category, title: classified.label(), id: classified.uri, description: classified.comment() || "", originalDescription: classified.comment() || ""});
       }
     }
     //console.log(this.categoryContent.values());
