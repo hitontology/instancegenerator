@@ -12,8 +12,8 @@ export class Select
   */
   constructor(placeholder,id,resources,multiple=true)
   {
+    // https://semantic-ui.com/modules/dropdown.html
     this.element = document.createElement("select");
-
     this.element.classList.add("large","ui","fluid","dropdown","search");
     if(multiple)
     {
