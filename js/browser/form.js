@@ -71,10 +71,11 @@ export default class Form
 
     for(const p of this.properties)
     {
+      console.log(p);
       if(p.type===OPROP&&!p.range) {console.warn("No range found for property "+p.uri);continue;}
       if(p.type===OPROP&&catalogueProperties.has(p.uri)) {continue;} // catalogues are handled separately
 
-      if(p.type===DPROP)
+      if(p.type===DPROP||p.range.uri==="http://www.w3.org/2000/01/rdf-schema#Resource")
       {
         const text = document.createElement("input");
         text.setAttribute("type","text");
@@ -115,7 +116,9 @@ DF from form*/
       if(!p.selected) // the selected function is added by the select element
       {
         if(!p.text) {continue;}
-        text+=`<${this.product}> <${p.uri}> "${p.text()}"@en.\n`;
+        if(p.range&&p.range.uri==="http://www.w3.org/2000/01/rdf-schema#Resource")
+        {text+=`<${this.product}> <${p.uri}> <${p.text().replace(/[^a-zA-Z0-9-_.:/]/g, '')}>.\n`;}
+        else {text+=`<${this.product}> <${p.uri}> "${p.text()}"@en.\n`;}
         continue;
       }
       for(const s of p.selected())
