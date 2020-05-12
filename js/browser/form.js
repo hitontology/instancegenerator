@@ -4,12 +4,13 @@ import * as rdf from "../rdf.js";
 import * as sparql from "../sparql.js";
 import {Property,DPROP,OPROP} from "../property.js";
 import {selectPropertyRange,Select} from "./select.js";
-import CatalogueSelect from "./catalogueSelect.js";
+import {CatalogueSelect,catalogueTypes} from "./catalogueSelect.js";
 import * as catalogue from '../catalogue.js';
 import getClass from '../clazz.js';
 import field from './field.js';
 import {createGitHubIssue} from './util.js';
 
+/*
 const catalogueClasses = [ // handled by catalogues
   "hito:ApplicationSystemCatalogue","hito:ApplicationSystemClassified","hito:ApplicationSystemCitation",
   "hito:FeatureCatalogue","hito:FeatureClassified","hito:FeatureCitation",
@@ -17,7 +18,7 @@ const catalogueClasses = [ // handled by catalogues
   "hito:UserGroupCatalogue","hito:UserGroupClassified","hito:UserGroupCitation",
   "hito:EnterpriseFunctionCatalogue","hito:EnterpriseFunctionClassified","hito:EnterpriseFunctionCitation"]
   .map(x=>rdf.long(x));
-
+*/
 export default class Form
 {
   /** Create the form but don't populate it yet. Use myForm.container to attach it to the DOM.*/
@@ -66,10 +67,12 @@ export default class Form
       form.appendChild(field(c.name,c.element)),
     );
 
+    const catalogueProperties = new Set(Object.values(catalogueTypes).map(v=>[v.citationRelation,v.classifiedRelation]).flat());
+
     for(const p of this.properties)
     {
       if(p.type===OPROP&&!p.range) {console.warn("No range found for property "+p.uri);continue;}
-      if(p.type===OPROP&&catalogueClasses.includes(p.range.uri)) {continue;} // catalogues are handled separately
+      if(p.type===OPROP&&catalogueProperties.has(p.uri)) {continue;} // catalogues are handled separately
 
       if(p.type===DPROP)
       {
@@ -122,8 +125,8 @@ DF from form*/
     }
     for(const c of this.catalogueSelects)
     {
-      console.log(c,c.text());
-      text+=c.text()+"\n";
+      console.log(c,c.text(this.product));
+      text+=c.text(this.product)+"\n";
     }
     //alert(text);
     createGitHubIssue("Create Instance","```"+text+"```");

@@ -1,17 +1,17 @@
 /** @module */
 import * as rdf from "../rdf.js";
 
-const catalogueTypes =
+export const catalogueTypes =
 {
-  "http://hitontology.eu/ontology/FeatureCatalogue": {citationType: "http://hitontology.eu/ontology/FeatureCitation", citationRelation: "http://hitontology.eu/ontology/featureClassified"},
-  "http://hitontology.eu/ontology/EnterpriseFunctionCatalogue": {citationType: "http://hitontology.eu/ontology/EnterpriseFunctionCitation", citationRelation: "http://hitontology.eu/ontology/enterpriseFunctionClassified"},
-  "http://hitontology.eu/ontology/ApplicationSystemCatalogue": {citationType: "http://hitontology.eu/ontology/ApplicationSystemCitation", citationRelation: "http://hitontology.eu/ontology/applicationSystemClassified"},
-  "http://hitontology.eu/ontology/UserGroupCatalogue": {citationType: "http://hitontology.eu/ontology/UserGroupCitation", citationRelation: "http://hitontology.eu/ontology/userGroupClassified"},
-  "http://hitontology.eu/ontology/OrganizationalUnitCatalogue": {citationType: "http://hitontology.eu/ontology/OrganizationalUnitCitation", citationRelation: "http://hitontology.eu/ontology/organizationalUnitClassified"},
+  "http://hitontology.eu/ontology/FeatureCatalogue": {citationType: "http://hitontology.eu/ontology/FeatureCitation", citationRelation: "http://hitontology.eu/ontology/feature", classifiedRelation: "http://hitontology.eu/ontology/featureClassified"},
+  "http://hitontology.eu/ontology/EnterpriseFunctionCatalogue": {citationType: "http://hitontology.eu/ontology/EnterpriseFunctionCitation", citationRelation: "http://hitontology.eu/ontology/enterpriseFunction", classifiedRelation: "http://hitontology.eu/ontology/enterpriseFunctionClassified"},
+  "http://hitontology.eu/ontology/ApplicationSystemCatalogue": {citationType: "http://hitontology.eu/ontology/ApplicationSystemCitation",   citationRelation: "http://hitontology.eu/ontology/applicationSystem", classifiedRelation: "http://hitontology.eu/ontology/applicationSystemClassified"},
+  "http://hitontology.eu/ontology/UserGroupCatalogue": {citationType: "http://hitontology.eu/ontology/UserGroupCitation",                   citationRelation: "http://hitontology.eu/ontology/userGroup", classifiedRelation: "http://hitontology.eu/ontology/userGroupClassified"},
+  "http://hitontology.eu/ontology/OrganizationalUnitCatalogue": {citationType: "http://hitontology.eu/ontology/OrganizationalUnitCitation", citationRelation: "http://hitontology.eu/ontology/organizationalUnit", classifiedRelation: "http://hitontology.eu/ontology/organizationalUnitClassified"},
 };
 
 /** An UI element where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations. */
-export default class CatalogueSelect
+export class CatalogueSelect
 {
   /** Create a container where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations.
    * All catalogues need to be of the same rdf:type, such as all feature catalogues or all enterprise function catalogues. */
@@ -50,15 +50,16 @@ export default class CatalogueSelect
   }
 
   /** RDF triples in turtle text form.*/
-  text()
+  text(productUri)
   {
     let text = "";
     for(const [uri,name] of this.entryCitations.entries())
     {
       console.log(uri,name);
       const citationUri = "http://hitontology.eu/ontology/"+this.camelize(name);
+      text+=`<${productUri}> <${this.types.citationRelation}> <${citationUri}>.\n`;
       text+=`<${citationUri}> a <${this.types.citationType}>.\n`;
-      text+=`<${citationUri}> <${this.types.citationRelation}> <${uri}>.\n`;
+      text+=`<${citationUri}> <${this.types.classifiedRelation}> <${uri}>.\n`;
       text+=`<${citationUri}> rdfs:label "${name}"@en.\n`;
     }
     return text;
