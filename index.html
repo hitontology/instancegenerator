@@ -11,6 +11,24 @@
   <script type="module" src="./js/browser/main.js"></script>
 </head>
 <body>
+
+  <template id="js-form-template">
+    <div class="form-container">
+      <h1></h1>
+      <form>
+      <div class="ui form">
+        <div class="ui top attached tabular menu">
+          <a class="item active" data-tab="first">Catalogues</a>
+          <a class="item" data-tab="second">Attributes</a>
+        </div>
+        <div class="ui bottom attached tab segment active" data-tab="first"></div>
+        <div class="ui bottom attached tab segment" data-tab="second"></div>
+      </div>
+      <input class="ui submit button" value="Create"/>
+    </form>
+    </div>
+  </template>
+
   <template id="js-category-template">
     <div class="two fields">
       <div class="field">
@@ -26,8 +44,7 @@
         </div>
       </div>
     </div>
-  </div>
-</template>
-<a href="https://github.com/hitontology/instancegenerator/issues" target="_blank">Provide Feedback on GitHub</a>
+  </template>
+  <a href="https://github.com/hitontology/instancegenerator/issues" target="_blank">Provide Feedback on GitHub</a>
 </body>
 </html>

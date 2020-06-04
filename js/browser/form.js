@@ -25,25 +25,20 @@ export default class Form
   constructor(clazzUri)
   {
     this.clazzUri = clazzUri;
-    this.container = document.createElement("div");
-    this.container.classList.add("form-container"); // flexbox
-    const h1 = document.createElement("h1");
-    h1.innerText = "Add "+rdf.short(clazzUri);
 
-    this.form = document.createElement("form");
+    const template = /** @type {HTMLTemplateElement} */ (document.getElementById("js-form-template"));
+    this.element = /** @type Element */ (template.content.cloneNode(true)).children[0];
+    [this.catalogueTab,this.attributeTab] = this.element.querySelectorAll(".tab");
+    this.element.querySelector("h1").innerText = "Add "+rdf.short(clazzUri);
     this.product = "http://hitontology.eu/ontology/"+Math.random().toString(36).substring(2, 15);  //http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-    //this.form.id=id;
-    this.container.append(h1,this.form);
     this.submit=this.submit.bind(this);
+    this.submitButton = this.element.querySelector("input");
+    this.submitButton.addEventListener("click",this.submit);
   }
 
   /** load the data from the SPARQL endpoint and populate */
   async init()
   {
-    const form = document.createElement("div");
-    form.classList.add("ui","form");
-    this.form.appendChild(form);
-
     this.properties = await Property.domainProperties(this.clazzUri);
 
     // Loading **************************************************************
@@ -51,7 +46,7 @@ export default class Form
       const clazz = await getClass(this.clazzUri);
       const loadSelect = new Select("Load Existing "+clazz.label(),"myid",(await clazz.getMembers()).values(),false);
       const s = loadSelect.element;
-      form.appendChild(s);
+      this.element.prepend(s);
       s.addEventListener("change",()=>this.load(s.options[s.selectedIndex].value));
     }
     // **********************************************************************
@@ -64,7 +59,7 @@ export default class Form
       await new CatalogueSelect(await catalogue.organizationalUnitCatalogues()).init(),
     ];
     this.catalogueSelects.forEach(c=>
-      form.appendChild(field(c.name,c.element)),
+      this.catalogueTab.appendChild(field(c.name,c.element)),
     );
 
     const catalogueProperties = new Set(Object.values(catalogueTypes).map(v=>[v.citationRelation,v.classifiedRelation]).flat());
@@ -81,22 +76,16 @@ export default class Form
         text.setAttribute("type","text");
         text.classList.add("textline");
         p.text = () => text.value;
-        form.appendChild(field(p.label,text));
+        this.attributeTab.appendChild(field(p.label,text));
       }
       else
       {
         p.select = await selectPropertyRange(field,p);
-        form.appendChild(field(p.label,p.select.element));
+        this.attributeTab.appendChild(field(p.label,p.select.element));
       }
     }
-    const submitButton = document.createElement("input");
-    submitButton.classList.add("ui","submit","button");
-    //submitButton.type="submit";  // prevent enter submit
-    submitButton.value="Create";
-    this.form.appendChild(submitButton);
-    submitButton.addEventListener("click",this.submit);
-
     //await this.load("http://hitontology.eu/ontology/Bahmni");
+    $('.menu .item').tab();
   }
 
   /** Remove the form from the DOM. */

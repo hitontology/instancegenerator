@@ -6,15 +6,15 @@ const classes = ["http://hitontology.eu/ontology/SoftwareProduct","http://hitont
   "http://hitontology.eu/ontology/FeatureClassified"];
 const select = document.createElement("select");
 */
-let activeForm;
+let form = null;
 
 /** Sets the active form class. */
 async function setClass(clazz)
 {
-  if(activeForm) {document.body.removeChild(this.container);}
-  activeForm = new Form(clazz);
-  document.body.prepend(activeForm.container);
-  await activeForm.init();
+  if(form) {document.body.removeChild(form);}
+  form = new Form(clazz);
+  document.body.prepend(form.element);
+  await form.init();
 }
 
 /** entry point */
@@ -38,7 +38,7 @@ async function main()
   await setClass(select.value);
   */
   await setClass("http://hitontology.eu/ontology/SoftwareProduct");
-  
+
   $('.ui.dropdown').dropdown({fullTextSearch: true});
   console.groupEnd();
 }
