@@ -17,7 +17,8 @@
 	},
 	"globals":
 	{
-		"Fuse": true
+		"Fuse": true,
+		"Notyf": true
 	},
 	"extends":
 	[

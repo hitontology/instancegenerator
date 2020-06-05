@@ -20,7 +20,8 @@ async function setClass(clazz)
 /** entry point */
 async function main()
 {
-  console.group("Init");
+  console.groupCollapsed("Init");
+  window.notyf = new Notyf({duration: 5000});
   /*
   select.addEventListener("change", (event)=>
   {

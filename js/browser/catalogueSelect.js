@@ -38,6 +38,7 @@ export class CatalogueSelect
     this.citation.addEventListener("change", this.enterCitation.bind(this));
 
     this.selectEntry = this.selectEntry.bind(this);
+    this.setCitation = this.setCitation.bind(this);
   }
 
   /** Remove special characters and convert to camel case */
@@ -55,7 +56,7 @@ export class CatalogueSelect
     let text = "";
     for(const [uri,name] of this.entryCitations.entries())
     {
-      console.log(uri,name);
+      //console.log(uri,name);
       const citationUri = "http://hitontology.eu/ontology/"+this.camelize(name);
       text+=`<${productUri}> <${this.types.citationRelation}> <${citationUri}>.\n`;
       text+=`<${citationUri}> a <${this.types.citationType}>.\n`;
@@ -65,40 +66,50 @@ export class CatalogueSelect
     return text;
   }
 
+  /** Set a new citation for the given classified.*/
+  setCitation(classifiedUri,citationLabel,tellUser)
+  {
+    const message = `New citation for ${rdf.short(classifiedUri)}: "${citationLabel}"`;
+    if(tellUser) {window.notyf.success(message);}
+    console.log(message);
+    this.entryCitations.set(classifiedUri,citationLabel);
+    const content = this.getContent(classifiedUri);
+    content.description = content.originalDescription + `<p>"${citationLabel}"</p>`;
+    $('#'+this.uiSearch.id).search('setting', 'source', [...this.categoryContent.values()]);
+  }
+
   /** User wants to create a new citation */
   enterCitation(changeEvent)
   {
     const newCitation = changeEvent.target.value;
-    console.log(changeEvent);
+    //console.log(changeEvent);
     if(!this.selectedClassified) // selected catalogue entry (classified X)
     {
-      this.citation.value = "Please select a catalogue entry first.";
+      window.notyf.error("Please select a catalogue entry first.");
+      //this.citation.value = "Please select a catalogue entry first.";
       return;
     }
     const content = this.getContent(this.selectedClassified);
     if(newCitation==="") // clear
     {
-      console.log(`Cleared value for ${this.selectedClassified}.`);
+      window.notyf.success(`Cleared value for ${rdf.short(this.selectedClassified)}.`);
       this.entryCitations.delete(this.selectedClassified);
       content.description = content.originalDescription;
       return;
     }
     if(newCitation.length<3)
     {
-      this.citation.value = "Please enter at least 3 characters.";
+      window.notyf.error("Please enter at least 3 characters.");
+      //this.citation.value = "Please enter at least 3 characters.";
       return;
     }
-    console.log(`New citation for ${this.selectedClassified}: ${newCitation}`);
-    this.entryCitations.set(this.selectedClassified,newCitation);
-
-    content.description = content.originalDescription + `<p>"${newCitation}"</p>`;
-    $('#'+this.uiSearch.id).search('setting', 'source', [...this.categoryContent.values()]);
+    this.setCitation(this.selectedClassified,newCitation,true);
   }
 
   /** Event handler for selecting a catalogue entry. */
   selectEntry(result,response)
   {
-    console.log(result);
+    //console.log(result);
     const uri = result.id;
     this.selectedClassified = uri;
     this.citation.placeholder = "Enter Citation for "+result.title;
@@ -111,7 +122,8 @@ export class CatalogueSelect
   setContent(catalogueUri,classifiedUri,content) {this.categoryContent.set(classifiedUri,content);}
   //setContent(catalogueUri,classifiedUri,content) {this.categoryContent.set(catalogueUri+classifiedUri,content);}
   /** Get Semantic UI content entry for a catalogue entry (classified X).*/
-  getContent(catalogueUri,classifiedUri) {return this.categoryContent.get(classifiedUri);}
+  getContent(classifiedUri) {return this.categoryContent.get(classifiedUri);}
+  //getContent(catalogueUri,classifiedUri) {return this.categoryContent.get(classifiedUri);}
   //getContent(catalogueUri,classifiedUri) {return this.categoryContent.get(catalogueUri+classifiedUri);}
 
   /** Populates the catalogue interface. */

@@ -12,12 +12,12 @@ import {createGitHubIssue} from './util.js';
 
 /*
 const catalogueClasses = [ // handled by catalogues
-  "hito:ApplicationSystemCatalogue","hito:ApplicationSystemClassified","hito:ApplicationSystemCitation",
-  "hito:FeatureCatalogue","hito:FeatureClassified","hito:FeatureCitation",
-  "hito:EnterpriseFunctionCatalogue","hito:EnterpriseFunctionClassified","hito:EnterpriseFunctionCitation",
-  "hito:UserGroupCatalogue","hito:UserGroupClassified","hito:UserGroupCitation",
-  "hito:EnterpriseFunctionCatalogue","hito:EnterpriseFunctionClassified","hito:EnterpriseFunctionCitation"]
-  .map(x=>rdf.long(x));
+"hito:ApplicationSystemCatalogue","hito:ApplicationSystemClassified","hito:ApplicationSystemCitation",
+"hito:FeatureCatalogue","hito:FeatureClassified","hito:FeatureCitation",
+"hito:EnterpriseFunctionCatalogue","hito:EnterpriseFunctionClassified","hito:EnterpriseFunctionCitation",
+"hito:UserGroupCatalogue","hito:UserGroupClassified","hito:UserGroupCitation",
+"hito:EnterpriseFunctionCatalogue","hito:EnterpriseFunctionClassified","hito:EnterpriseFunctionCitation"]
+.map(x=>rdf.long(x));
 */
 export default class Form
 {
@@ -25,7 +25,6 @@ export default class Form
   constructor(clazzUri)
   {
     this.clazzUri = clazzUri;
-
     const template = /** @type {HTMLTemplateElement} */ (document.getElementById("js-form-template"));
     this.element = /** @type Element */ (template.content.cloneNode(true)).children[0];
     [this.catalogueTab,this.attributeTab] = this.element.querySelectorAll(".tab");
@@ -58,9 +57,12 @@ export default class Form
       await new CatalogueSelect(await catalogue.userGroupCatalogues()).init(),
       await new CatalogueSelect(await catalogue.organizationalUnitCatalogues()).init(),
     ];
+    this.catalogueSelectsByCitationType = new Map();
     this.catalogueSelects.forEach(c=>
-      this.catalogueTab.appendChild(field(c.name,c.element)),
-    );
+    {
+      this.catalogueTab.appendChild(field(c.name,c.element));
+      this.catalogueSelectsByCitationType.set(c.types.citationType,c);
+    });
 
     const catalogueProperties = new Set(Object.values(catalogueTypes).map(v=>[v.citationRelation,v.classifiedRelation]).flat());
 
@@ -95,7 +97,7 @@ export default class Form
   }*/
 
   /** Generate R      console.log(`Setting values ${JSON.stringify(values.get(p.uri))} for property ${p.uri}.`);
-DF from form*/
+  DF from form*/
   submit(e)
   {
     e.preventDefault();
@@ -145,48 +147,83 @@ DF from form*/
   {
     this.clear();
     console.log("Loading",uri);
-    // all triples with the given uri as subject
-    const query = `SELECT ?p ?o
-    {
-      <${uri}> ?p ?o.
-    }`;
-    const bindings = sparql.flat(await sparql.select(query,sparql.HITO,`select all triples of ${uri}`));
-    //console.log(bindings);
-    const values = new Map();
-    this.properties.forEach(p=>{values.set(p.uri,[]);}); // JavaScript doesn't have a native multi map, so emulate our own
-    bindings.forEach(b=>
-    {
-      const v = values.get(b.p);
-      if(!v) {return;} // we don't use the property in our form
-      //console.log(values.get(p.uri));
-      v.push(b.o);
-    });
 
-    for(const p of this.properties)
+    const loadAttributes = async ()=>
     {
-      if(!p.select) {continue;}
-      //p.select.element.value = values.get(p.uri);
-      // select.options is of type HTMLOptionsCollection, see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionsCollection
-      // see https://stackoverflow.com/a/43255752/398963
-      const options = [...p.select.element.options];
-      if(!options) {break;}
-      const vs = values.get(p.uri);
-      console.log(`Setting values ${JSON.stringify(vs)} for property ${p.uri}.`);
-      // ********************in case it is not converted yet by Semantic UI to its own structure *******
-      for(const v of vs)
+      // all non-citation triples with the given uri as subject
+      const query = `SELECT ?p ?o
       {
-        //console.log(options);
-        const opt = options.find(o =>o.value === v);
-        if(opt){opt.selected = true;console.log(opt);}
-        //p.select.element.selected = v;
-        //break;
+        <${uri}> ?p ?o.
+        MINUS {?o a [rdfs:subClassOf hito:Citation].}
+      }`;
+      const bindings = sparql.flat(await sparql.select(query,sparql.HITO,`select all attributes of ${uri}`));
+      //console.log(bindings);
+      const values = new Map();
+      this.properties.forEach(p=>{values.set(p.uri,[]);}); // JavaScript doesn't have a native multi map, so emulate our own
+      bindings.forEach(b=>
+      {
+        const v = values.get(b.p);
+        if(!v) {return;} // we don't use the property in our form
+        //console.log(values.get(p.uri));
+        v.push(b.o);
+      });
+
+      for(const p of this.properties)
+      {
+        if(!p.select) {continue;}
+        //p.select.element.value = values.get(p.uri);
+        // select.options is of type HTMLOptionsCollection, see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionsCollection
+        // see https://stackoverflow.com/a/43255752/398963
+        const options = [...p.select.element.options];
+        if(!options) {break;}
+        const vs = values.get(p.uri);
+        if(vs.length===0) {continue;}
+        {console.log(`Setting values ${JSON.stringify(vs)} for property ${p.uri}.`);}
+        // ********************in case it is not converted yet by Semantic UI to its own structure *******
+        for(const v of vs)
+        {
+          //console.log(options);
+          const opt = options.find(o =>o.value === v);
+          if(opt)
+          {
+            opt.selected = true;
+            //console.log(opt);
+          }
+          //p.select.element.selected = v;
+          //break;
+        }
+        // Semantic UI Way *******************************************************************************
+        const div = p.select.element.parentElement;
+        //div.dropdown("set selected",vs); // does not work, see https://stackoverflow.com/questions/60546024/how-to-call-the-semantic-ui-dropdown-function-directly-on-an-element
+        div.id = p.select.element.id+"-div";
+        $("#"+$.escapeSelector(div.id)).dropdown("set selected",vs);
+        // ***********************************************************************************************
       }
-      // Semantic UI Way *******************************************************************************
-      const div = p.select.element.parentElement;
-      //div.dropdown("set selected",vs); // does not work, see https://stackoverflow.com/questions/60546024/how-to-call-the-semantic-ui-dropdown-function-directly-on-an-element
-      div.id = p.select.element.id+"-div";
-      $("#"+$.escapeSelector(div.id)).dropdown("set selected",vs);
-      // ***********************************************************************************************
-    }
+    };
+
+    const loadCatalogues = async ()=>
+    {
+      const query = `SELECT (STR(SAMPLE(?citationLabel)) AS ?citationLabel) ?citationType ?classified
+        {
+          hito:Bahmni ?p ?citation.
+
+          ?citation a ?citationType;
+          rdfs:label ?citationLabel;
+          ?q ?classified.
+
+          ?citationType rdfs:subClassOf hito:Citation.
+
+          ?classified a [rdfs:subClassOf hito:Classified].
+        }`;
+      const bindings = sparql.flat(await sparql.select(query,sparql.HITO,`select all citations of ${uri}`));
+      bindings.forEach(b=>
+      {
+        const catalogueSelect = this.catalogueSelectsByCitationType.get(b.citationType);
+        catalogueSelect.setCitation(b.classified,b.citationLabel);
+      });
+    };
+
+    await loadAttributes();
+    await loadCatalogues();
   }
 }
