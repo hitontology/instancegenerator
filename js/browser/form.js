@@ -96,8 +96,7 @@ export default class Form
     document.body.removeChild(this.container);
   }*/
 
-  /** Generate R      console.log(`Setting values ${JSON.stringify(values.get(p.uri))} for property ${p.uri}.`);
-  DF from form*/
+  /** Generate RDF from form*/
   submit(e)
   {
     e.preventDefault();
