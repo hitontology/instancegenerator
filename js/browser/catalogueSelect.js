@@ -15,9 +15,10 @@ export class CatalogueSelect
 {
   /** Create a container where the user first selects a catalogue of X and then gets a list of classified X to choose from and add X-citations.
    * All catalogues need to be of the same rdf:type, such as all feature catalogues or all enterprise function catalogues. */
-  constructor(catalogues)
+  constructor(catalogues,form)
   {
     this.catalogues = catalogues;
+    this.form=form;
     this.type = catalogues[0].types[0];
     if(!this.type) {throw new Error("No type for catalogues "+JSON.stringify(catalogues));}
     this.types = catalogueTypes[this.type];
@@ -39,6 +40,7 @@ export class CatalogueSelect
 
     this.selectEntry = this.selectEntry.bind(this);
     this.setCitation = this.setCitation.bind(this);
+    this.clearCitations = this.clearCitations.bind(this);
   }
 
   /** Remove special characters and convert to camel case */
@@ -46,7 +48,8 @@ export class CatalogueSelect
   {
     return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index)
     {
-      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+      return word.toUpperCase();
+      //return index === 0 ? word.toLowerCase() : word.toUpperCase();
     }).replace(/\s+/g, '');
   }
 
@@ -66,15 +69,23 @@ export class CatalogueSelect
     return text;
   }
 
+  /** Remove all citations*/
+  clearCitations()
+  {
+    this.entryCitations.clear();
+    // TODO: remove citations in UI
+  }
+
   /** Set a new citation for the given classified.*/
   setCitation(classifiedUri,citationLabel,tellUser)
   {
     const message = `New citation for ${rdf.short(classifiedUri)}: "${citationLabel}"`;
     if(tellUser) {window.notyf.success(message);}
-    console.log(message);
+    //console.log(message);
     this.entryCitations.set(classifiedUri,citationLabel);
     const content = this.getContent(classifiedUri);
-    content.description = content.originalDescription + `<p>"${citationLabel}"</p>`;
+    //if(content.originalDescription===undefined) {content.originalDescription=content.description;}
+    {content.description = content.originalDescription + `<p>"${citationLabel}"</p>`;}
     $('#'+this.uiSearch.id).search('setting', 'source', [...this.categoryContent.values()]);
   }
 
@@ -95,6 +106,7 @@ export class CatalogueSelect
       window.notyf.success(`Cleared value for ${rdf.short(this.selectedClassified)}.`);
       this.entryCitations.delete(this.selectedClassified);
       content.description = content.originalDescription;
+      this.form.updateViewCitationTable();
       return;
     }
     if(newCitation.length<3)
@@ -104,6 +116,7 @@ export class CatalogueSelect
       return;
     }
     this.setCitation(this.selectedClassified,newCitation,true);
+    this.form.updateViewCitationTable();
   }
 
   /** Event handler for selecting a catalogue entry. */
@@ -122,7 +135,12 @@ export class CatalogueSelect
   setContent(catalogueUri,classifiedUri,content) {this.categoryContent.set(classifiedUri,content);}
   //setContent(catalogueUri,classifiedUri,content) {this.categoryContent.set(catalogueUri+classifiedUri,content);}
   /** Get Semantic UI content entry for a catalogue entry (classified X).*/
-  getContent(classifiedUri) {return this.categoryContent.get(classifiedUri);}
+  getContent(classifiedUri)
+  {
+    const content = this.categoryContent.get(classifiedUri);
+    if(!content) {throw new Error("Cannot not get content for classified URI "+classifiedUri);}
+    {return content;}
+  }
   //getContent(catalogueUri,classifiedUri) {return this.categoryContent.get(classifiedUri);}
   //getContent(catalogueUri,classifiedUri) {return this.categoryContent.get(catalogueUri+classifiedUri);}
 

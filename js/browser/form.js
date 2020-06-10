@@ -27,10 +27,13 @@ export default class Form
     this.clazzUri = clazzUri;
     const template = /** @type {HTMLTemplateElement} */ (document.getElementById("js-form-template"));
     this.element = /** @type Element */ (template.content.cloneNode(true)).children[0];
-    [this.catalogueTab,this.attributeTab] = this.element.querySelectorAll(".tab");
+    [this.editCitationTab,this.viewCitationTab,this.attributeTab] = this.element.querySelectorAll(".tab");
+    this.viewCatalogueBody = this.element.querySelector("table tbody");
+    //console.log(this.viewCatalogueBody);
     this.element.querySelector("h1").innerText = "Add "+rdf.short(clazzUri);
     this.product = "http://hitontology.eu/ontology/"+Math.random().toString(36).substring(2, 15);  //http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
     this.submit=this.submit.bind(this);
+    this.updateViewCitationTable=this.updateViewCitationTable.bind(this);
     this.submitButton = this.element.querySelector("input");
     this.submitButton.addEventListener("click",this.submit);
   }
@@ -51,16 +54,16 @@ export default class Form
     // **********************************************************************
 
     this.catalogueSelects = [
-      await new CatalogueSelect(await catalogue.applicationSystemCatalogues()).init(),
-      await new CatalogueSelect(await catalogue.functionCatalogues()).init(),
-      await new CatalogueSelect(await catalogue.featureCatalogues()).init(),
-      await new CatalogueSelect(await catalogue.userGroupCatalogues()).init(),
-      await new CatalogueSelect(await catalogue.organizationalUnitCatalogues()).init(),
+      await new CatalogueSelect(await catalogue.applicationSystemCatalogues(),this).init(),
+      await new CatalogueSelect(await catalogue.functionCatalogues(),this).init(),
+      await new CatalogueSelect(await catalogue.featureCatalogues(),this).init(),
+      await new CatalogueSelect(await catalogue.userGroupCatalogues(),this).init(),
+      await new CatalogueSelect(await catalogue.organizationalUnitCatalogues(),this).init(),
     ];
     this.catalogueSelectsByCitationType = new Map();
     this.catalogueSelects.forEach(c=>
     {
-      this.catalogueTab.appendChild(field(c.name,c.element));
+      this.editCitationTab.appendChild(field(c.name,c.element));
       this.catalogueSelectsByCitationType.set(c.types.citationType,c);
     });
 
@@ -68,7 +71,7 @@ export default class Form
 
     for(const p of this.properties)
     {
-      console.log(p);
+      //console.log(p);
       if(p.type===OPROP&&!p.range) {console.warn("No range found for property "+p.uri);continue;}
       if(p.type===OPROP&&catalogueProperties.has(p.uri)) {continue;} // catalogues are handled separately
 
@@ -141,11 +144,31 @@ export default class Form
     }
   }
 
+  /** Fill the catalogue view table with all existing citations*/
+  async updateViewCitationTable()
+  {
+    this.viewCatalogueBody.innerHTML = "";
+    for(const [type,select] of this.catalogueSelectsByCitationType.entries())
+    {
+      //console.log(type,select);
+      for(const [classified,citation] of select.entryCitations.entries())
+      {
+        const content = select.getContent(classified);
+        //console.log(content);
+        //const citationUri = "http://hitontology.eu/ontology/"+select.camelize(citation);
+        //<a href="${citationUri}">${citation}</a>
+        this.viewCatalogueBody.innerHTML+=`<tr><td>${select.name}</td><td>${select.getContent(classified).category}</td><td><a href="${content.id}">${content.title}</a></td><td>${citation}</td></tr>`;
+      }
+    }
+  }
+
   /** Load an existing instance. Existing values are kept. Form needs to be initialized. */
   async load(uri)
   {
     this.clear();
     console.log("Loading",uri);
+
+    this.element.querySelector("h1").innerHTML = `Edit <a href="${uri}">${rdf.short(uri)}</a>`;
 
     const loadAttributes = async ()=>
     {
@@ -177,7 +200,7 @@ export default class Form
         if(!options) {break;}
         const vs = values.get(p.uri);
         if(vs.length===0) {continue;}
-        {console.log(`Setting values ${JSON.stringify(vs)} for property ${p.uri}.`);}
+        //console.log(`Setting values ${JSON.stringify(vs)} for property ${p.uri}.`);
         // ********************in case it is not converted yet by Semantic UI to its own structure *******
         for(const v of vs)
         {
@@ -204,7 +227,7 @@ export default class Form
     {
       const query = `SELECT (STR(SAMPLE(?citationLabel)) AS ?citationLabel) ?citationType ?classified
         {
-          hito:Bahmni ?p ?citation.
+          <${uri}> ?p ?citation.
 
           ?citation a ?citationType;
           rdfs:label ?citationLabel;
@@ -214,6 +237,7 @@ export default class Form
 
           ?classified a [rdfs:subClassOf hito:Classified].
         }`;
+      for(const s of this.catalogueSelectsByCitationType.values()) {s.clearCitations();}
       const bindings = sparql.flat(await sparql.select(query,sparql.HITO,`select all citations of ${uri}`));
       bindings.forEach(b=>
       {
@@ -222,7 +246,8 @@ export default class Form
       });
     };
 
-    await loadAttributes();
     await loadCatalogues();
+    this.updateViewCitationTable();
+    await loadAttributes();
   }
 }
