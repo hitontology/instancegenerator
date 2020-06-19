@@ -9,16 +9,8 @@ import * as catalogue from '../catalogue.js';
 import getClass from '../clazz.js';
 import field from './field.js';
 import {createGitHubIssue} from './util.js';
+import ViewCitationTable from './viewCitationTable.js';
 
-/*
-const catalogueClasses = [ // handled by catalogues
-"hito:ApplicationSystemCatalogue","hito:ApplicationSystemClassified","hito:ApplicationSystemCitation",
-"hito:FeatureCatalogue","hito:FeatureClassified","hito:FeatureCitation",
-"hito:EnterpriseFunctionCatalogue","hito:EnterpriseFunctionClassified","hito:EnterpriseFunctionCitation",
-"hito:UserGroupCatalogue","hito:UserGroupClassified","hito:UserGroupCitation",
-"hito:EnterpriseFunctionCatalogue","hito:EnterpriseFunctionClassified","hito:EnterpriseFunctionCitation"]
-.map(x=>rdf.long(x));
-*/
 export default class Form
 {
   /** Create the form but don't populate it yet. Use myForm.container to attach it to the DOM.*/
@@ -28,12 +20,9 @@ export default class Form
     const template = /** @type {HTMLTemplateElement} */ (document.getElementById("js-form-template"));
     this.element = /** @type Element */ (template.content.cloneNode(true)).children[0];
     [this.editCitationTab,this.viewCitationTab,this.attributeTab] = this.element.querySelectorAll(".tab");
-    this.viewCatalogueBody = this.element.querySelector("table tbody");
-    //console.log(this.viewCatalogueBody);
     this.element.querySelector("h1").innerText = "Add "+rdf.short(clazzUri);
     this.product = "http://hitontology.eu/ontology/"+Math.random().toString(36).substring(2, 15);  //http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
     this.submit=this.submit.bind(this);
-    this.updateViewCitationTable=this.updateViewCitationTable.bind(this);
     this.submitButton = this.element.querySelector("input");
     this.submitButton.addEventListener("click",this.submit);
   }
@@ -60,6 +49,8 @@ export default class Form
       await new CatalogueSelect(await catalogue.userGroupCatalogues(),this).init(),
       await new CatalogueSelect(await catalogue.organizationalUnitCatalogues(),this).init(),
     ];
+    this.viewCitationTable=new ViewCitationTable(this.catalogueSelects);
+
     this.catalogueSelectsByCitationType = new Map();
     this.catalogueSelects.forEach(c=>
     {
@@ -93,11 +84,7 @@ export default class Form
     $('.menu .item').tab();
   }
 
-  /** Remove the form from the DOM. */
-  /*unregister()
-    {
-    document.body.removeChild(this.container);
-  }*/
+  /** Remove the form from the DOM. */ /*unregister() {document.body.removeChild(this.container);}*/
 
   /** Generate RDF from form*/
   submit(e)
@@ -141,24 +128,6 @@ export default class Form
       const div = p.select.element.parentElement;
       div.id = p.select.element.id+"-div";
       $("#"+$.escapeSelector(div.id)).dropdown("clear");
-    }
-  }
-
-  /** Fill the catalogue view table with all existing citations*/
-  async updateViewCitationTable()
-  {
-    this.viewCatalogueBody.innerHTML = "";
-    for(const [type,select] of this.catalogueSelectsByCitationType.entries())
-    {
-      //console.log(type,select);
-      for(const [classified,citation] of select.entryCitations.entries())
-      {
-        const content = select.getContent(classified);
-        //console.log(content);
-        //const citationUri = "http://hitontology.eu/ontology/"+select.camelize(citation);
-        //<a href="${citationUri}">${citation}</a>
-        this.viewCatalogueBody.innerHTML+=`<tr><td>${select.name}</td><td>${select.getContent(classified).category}</td><td><a href="${content.id}">${content.title}</a></td><td>${citation}</td></tr>`;
-      }
     }
   }
 
@@ -247,7 +216,13 @@ export default class Form
     };
 
     await loadCatalogues();
-    this.updateViewCitationTable();
+    this.viewCitationTable.update();
     await loadAttributes();
+  }
+
+  /** Update the form view.*/
+  update()
+  {
+    this.viewCitationTable.update();
   }
 }

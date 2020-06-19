@@ -106,7 +106,7 @@ export class CatalogueSelect
       window.notyf.success(`Cleared value for ${rdf.short(this.selectedClassified)}.`);
       this.entryCitations.delete(this.selectedClassified);
       content.description = content.originalDescription;
-      this.form.updateViewCitationTable();
+      this.form.update();
       return;
     }
     if(newCitation.length<3)
@@ -116,7 +116,7 @@ export class CatalogueSelect
       return;
     }
     this.setCitation(this.selectedClassified,newCitation,true);
-    this.form.updateViewCitationTable();
+    this.form.update();
   }
 
   /** Event handler for selecting a catalogue entry. */
