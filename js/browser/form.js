@@ -33,22 +33,20 @@ export default class Form
     this.properties = await Property.domainProperties(this.clazzUri);
 
     // Loading **************************************************************
+    getClass(this.clazzUri).then(async clazz=>
     {
-      const clazz = await getClass(this.clazzUri);
       const loadSelect = new Select("Load Existing "+clazz.label(),"myid",(await clazz.getMembers()).values(),false);
       const s = loadSelect.element;
       this.element.prepend(s);
       s.addEventListener("change",()=>this.load(s.options[s.selectedIndex].value));
-    }
+    });
     // **********************************************************************
+    {
+      const form = this;
+      this.catalogueSelects = (await catalogue.cataloguess()).map(cats => new CatalogueSelect(cats,form));
+      for(const cs of this.catalogueSelects) {cs.init();} // asynchronous, don't wait
+    }
 
-    this.catalogueSelects = [
-      await new CatalogueSelect(await catalogue.applicationSystemCatalogues(),this).init(),
-      await new CatalogueSelect(await catalogue.functionCatalogues(),this).init(),
-      await new CatalogueSelect(await catalogue.featureCatalogues(),this).init(),
-      await new CatalogueSelect(await catalogue.userGroupCatalogues(),this).init(),
-      await new CatalogueSelect(await catalogue.organizationalUnitCatalogues(),this).init(),
-    ];
     this.viewCitationTable=new ViewCitationTable(this.catalogueSelects);
 
     this.catalogueSelectsByCitationType = new Map();
@@ -60,11 +58,10 @@ export default class Form
 
     const catalogueProperties = new Set(Object.values(catalogueTypes).map(v=>[v.citationRelation,v.classifiedRelation]).flat());
 
-    for(const p of this.properties)
+    await Promise.all(this.properties.map(async p=>
     {
-      //console.log(p);
-      if(p.type===OPROP&&!p.range) {console.warn("No range found for property "+p.uri);continue;}
-      if(p.type===OPROP&&catalogueProperties.has(p.uri)) {continue;} // catalogues are handled separately
+      if(p.type===OPROP&&!p.range) {console.warn("No range found for property "+p.uri);return;}
+      if(p.type===OPROP&&catalogueProperties.has(p.uri)) {return;} // catalogues are handled separately
 
       if(p.type===DPROP||p.range.uri==="http://www.w3.org/2000/01/rdf-schema#Resource")
       {
@@ -79,7 +76,7 @@ export default class Form
         p.select = await selectPropertyRange(field,p);
         this.attributeTab.appendChild(field(p.label,p.select.element));
       }
-    }
+    }));
     //await this.load("http://hitontology.eu/ontology/Bahmni");
     $('.menu .item').tab();
   }

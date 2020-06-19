@@ -43,3 +43,12 @@ export async function applicationSystemCatalogues() {return await getCatalogues(
 export async function organizationalUnitCatalogues() {return await getCatalogues("http://hitontology.eu/ontology/OrganizationalUnitCatalogue");}
 /***/
 export async function userGroupCatalogues() {return await getCatalogues("http://hitontology.eu/ontology/UserGroupCatalogue");}
+
+const types = ["FeatureCatalogue", "EnterpriseFunctionCatalogue", "ApplicationSystemCatalogue", "UserGroupCatalogue", "OrganizationalUnitCatalogue"].map(ct=>"http://hitontology.eu/ontology/"+ct);
+
+/** Fetch array of arrays of all catalogue types in parallel.*/
+export async function cataloguess()
+{
+  const promises = types.map(t=>getCatalogues(t));
+  return (await Promise.all(promises));
+}

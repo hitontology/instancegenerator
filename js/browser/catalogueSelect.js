@@ -160,7 +160,7 @@ export class CatalogueSelect
     }
     //console.log(this.categoryContent.values());
     //uiSearch.search(...) does not work
-    document.body.appendChild(this.element); // add temporarily, otherwise it won't be found by jquery
+    //document.body.appendChild(this.element); // add temporarily, otherwise it won't be found by jquery // update: works without now and breaks parallelism
     $('#'+this.uiSearch.id)
       .search({
         name: this.name+' Search',
@@ -174,7 +174,7 @@ export class CatalogueSelect
         minCharacters: 0,
         onSelect: this.selectEntry,
       });
-    document.body.removeChild(this.element); // remove from DOM again
+    //  document.body.removeChild(this.element); // remove from DOM again
     return this;
   }
 }
