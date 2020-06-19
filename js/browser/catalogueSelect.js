@@ -53,20 +53,20 @@ export class CatalogueSelect
     }).replace(/\s+/g, '');
   }
 
-  /** RDF triples in turtle text form.*/
-  text(productUri)
+  /** RDF triples in turtle text form without prefix specifications, so it can be merged with others.*/
+  turtle(productUri)
   {
-    let text = "";
-    for(const [uri,name] of this.entryCitations.entries())
+    let turtle = "";
+    for(const [uri,names] of this.entryCitations.entries())
     {
-      //console.log(uri,name);
-      const citationUri = "http://hitontology.eu/ontology/"+this.camelize(name);
-      text+=`<${productUri}> <${this.types.citationRelation}> <${citationUri}>.\n`;
-      text+=`<${citationUri}> a <${this.types.citationType}>.\n`;
-      text+=`<${citationUri}> <${this.types.classifiedRelation}> <${uri}>.\n`;
-      text+=`<${citationUri}> rdfs:label "${name}"@en.\n`;
+      const citationUri = "http://hitontology.eu/ontology/"+this.camelize(names[0]);
+      turtle+=`<${productUri}> <${this.types.citationRelation}> <${citationUri}>.\n`;
+      turtle+=`<${citationUri}> a <${this.types.citationType}>.\n`;
+      turtle+=`<${citationUri}> <${this.types.classifiedRelation}> <${uri}>.\n`;
+      for(const name of names.split('|'))
+      {turtle+=`<${citationUri}> rdfs:label "${name}"@en.\n`;}
     }
-    return text;
+    return turtle;
   }
 
   /** Remove all citations*/
@@ -79,7 +79,7 @@ export class CatalogueSelect
   /** Set a new citation for the given classified.*/
   setCitation(classifiedUri,citationLabel,tellUser)
   {
-    const message = `New citation for ${rdf.short(classifiedUri)}: "${citationLabel}"`;
+    const message = `New citation for ${rdf.short(classifiedUri)}: "${citationLabel.split("|").reduce((x,y)=>x+'", "'+y)}"`;
     if(tellUser) {window.notyf.success(message);}
     //console.log(message);
     this.entryCitations.set(classifiedUri,citationLabel);

@@ -17,12 +17,15 @@ export default class ViewCitationTable
     this.tableBody.innerHTML = "";
     for(const select of this.catalogueSelects)
     {
-      for(const [classified,citation] of select.entryCitations.entries())
+      for(const [classified,citations] of select.entryCitations.entries())
       {
         const content = select.getContent(classified);
+        for(const citation of citations.split('|'))
+        {
         //const citationUri = "http://hitontology.eu/ontology/"+select.camelize(citation);
         //<a href="${citationUri}">${citation}</a>
-        this.tableBody.innerHTML+=`<tr><td>${select.name}</td><td>${select.getContent(classified).category}</td><td><a href="${content.id}">${content.title}</a></td><td>${citation}</td></tr>`;
+          this.tableBody.innerHTML+=`<tr><td>${select.name}</td><td>${select.getContent(classified).category}</td><td><a href="${content.id}">${content.title}</a></td><td>${citation}</td></tr>`;
+        }
       }
     }
   }

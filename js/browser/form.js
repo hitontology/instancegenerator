@@ -86,33 +86,33 @@ export default class Form
 
   /** Remove the form from the DOM. */ /*unregister() {document.body.removeChild(this.container);}*/
 
-  /** Generate RDF from form*/
+  /** Generate RDF from the form*/
   submit(e)
   {
     e.preventDefault();
-    let text = "";
+    let turtle = "";
     for(const p of this.properties)
     {
       if(!p.selected) // the selected function is added by the select element
       {
         if(!p.text) {continue;}
         if(p.range&&p.range.uri==="http://www.w3.org/2000/01/rdf-schema#Resource")
-        {text+=`<${this.product}> <${p.uri}> <${p.text().replace(/[^a-zA-Z0-9-_.:/]/g, '')}>.\n`;}
-        else {text+=`<${this.product}> <${p.uri}> "${p.text()}"@en.\n`;}
+        {turtle+=`<${this.product}> <${p.uri}> <${p.text().replace(/[^a-zA-Z0-9-_.:/]/g, '')}>.\n`;}
+        else {turtle+=`<${this.product}> <${p.uri}> "${p.text()}"@en.\n`;}
         continue;
       }
       for(const s of p.selected())
       {
-        text+=`<${this.product}> <${p.uri}> <${s}>.\n`;
+        turtle+=`<${this.product}> <${p.uri}> <${s}>.\n`;
       }
     }
     for(const c of this.catalogueSelects)
     {
-      console.log(c,c.text(this.product));
-      text+=c.text(this.product)+"\n";
+      console.log(c,c.turtle(this.product));
+      turtle+=c.turtle(this.product)+"\n";
     }
     //alert(text);
-    createGitHubIssue("Create Instance","```"+text+"```");
+    createGitHubIssue("Create Instance","```"+turtle+"```");
   }
 
   /** Clear all selected values. */
