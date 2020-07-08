@@ -152,6 +152,7 @@ export class CatalogueSelect
     {
       for(const classified of (await catalogue.getMembers()).values())
       {
+        //console.log(classified);
         let category = catalogue.label();
         if(catalogue.comment())  {category=`<a title="${catalogue.comment()}" href="${catalogue.uri}" target="_blank">${category}</a>`;}
         //const title = i.label()+`<a href="${i.uri}" target="_blank">Browse</a>`; // is displayed incorrectly
