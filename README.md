@@ -1,6 +1,8 @@
 # Instance Generator
 
 The graphical user interface to generate new instances for HITO, starting with software products.
+Is not developed anymore, as it was superseded by <https://github.com/hitontology/database-frontend>.
+It could be reused later as a data browsing tool but there is no need right now.
 
 ## Development
 You only need Git, NPM and a browser. NPM is only needed for linting and testing. CORS over the file system needs to not be blocked by your browser.
